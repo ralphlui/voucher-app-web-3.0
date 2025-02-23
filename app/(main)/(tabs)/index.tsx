@@ -1,20 +1,22 @@
 import React, { useCallback, useDeferredValue, useState } from 'react';
 import {
-  StyleSheet,
+  ActivityIndicator,
   FlatList,
   ListRenderItemInfo,
-  ActivityIndicator,
   RefreshControl,
+  StyleSheet,
 } from 'react-native';
 
 import CampaignCard from '@/components/cards/CampaignCard';
+import HandleResponse from '@/components/common/HandleResponse';
+import NoDataFound from '@/components/common/NoDataFound';
 import usePagination from '@/hooks/usePagination';
+import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { useGetCampaignsQuery } from '@/services/campaign.service';
 import { Campaign } from '@/types/Campaign';
+import { Link } from 'expo-router';
 import { Searchbar } from 'react-native-paper';
-import NoDataFound from '@/components/common/NoDataFound';
-import useResponsiveColumns from '@/hooks/useResponsiveColumns';
-import HandleResponse from '@/components/common/HandleResponse';
+
 
 const CampaignTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -74,6 +76,10 @@ const CampaignTab = () => {
         onChangeText={setSearchQuery}
         value={searchQuery}
       />
+      {/* to fix later into login then homepage */}
+      <Link href='/(auth)/2fa'>
+        Go to 2fa screen
+      </Link>
       <FlatList
         key={numColumns}
         numColumns={numColumns}
