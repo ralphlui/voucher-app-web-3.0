@@ -76,10 +76,6 @@ const CampaignTab = () => {
         onChangeText={setSearchQuery}
         value={searchQuery}
       />
-      {/* to fix later into login then homepage */}
-      <Link href='/(auth)/2fa'>
-        Go to 2fa screen
-      </Link>
       <FlatList
         key={numColumns}
         numColumns={numColumns}

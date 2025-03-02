@@ -77,7 +77,7 @@ const Login = () => {
     if (data) {
       dispatch(userLogin(data));
       dispatch(initializeWebSocket(data));
-      router.push('/');
+      router.push('/(auth)/2fa');
     }
   };
 

@@ -18,9 +18,7 @@ const verifyCode = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const [login, { data, isSuccess, isError, isLoading, error }] = useLoginMutation();
-
-  const { control, setFocus, handleSubmit } = useForm<TwoFaForm>({
+  const { control, setFocus, handleSubmit, formState: { errors } } = useForm<TwoFaForm>({
     defaultValues: {
       code: '',
     },
@@ -30,18 +28,18 @@ const verifyCode = () => {
     setFocus('code');
   }, [setFocus]);
 
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState<string>('');
 
-  const onSubmit = () => {
-
-  }; // to add logic to direct homepage
+  const onSubmit = (data: TwoFaForm) => {
+    if (data.code.length >= 6) {
+      onSuccess();
+    } else {
+      alert('The code must be at least 6 characters long');
+    }
+  }; // to add logic to direct homepage (temporary use currently)
 
   const onSuccess = () => {
-    if (data) {
-      dispatch(userLogin(data));
-      dispatch(initializeWebSocket(data));
       router.push('/');
-    }
   };
 
   return (
@@ -51,22 +49,19 @@ const verifyCode = () => {
           title: '2FA',
         }}
       />
-      {(isSuccess || isError) && (
+      {(errors.code) && (
         <HandleResponse
-          isError={isError}
-          isSuccess={isSuccess}
-          error={error || 'Error occurs'}
-          message={data?.message}
-          onSuccess={onSuccess}
+          isError={true}
+          message={errors.code?.message || 'Invalid Code'}
         />
       )}
       <View style={[styles.containerStyle, Platform.OS === 'web' && styles.webStyle]}>
-        {isLoading ? (
-          <ActivityIndicator size="large" />
-        ) : (
           <ScrollView contentContainerStyle={styles.scrollViewStyle}>
             <View style={styles.icon}>
               <Avatar.Icon icon="ticket-percent-outline" />
+            </View>
+            <View style={styles.instructionWrapper}>
+                Please key in your 6 digit code sent to your email.
             </View>
             <FormBuilder
               control={control}
@@ -80,11 +75,18 @@ const verifyCode = () => {
                     left: <TextInput.Icon icon="code-json" />,
                     keyboardType: 'numeric',
                     onChangeText: (text) => {
-                      if (/^\d+$/.test(text) || text === '') {
+                      if (/^\d+$/.test(text)) {
                         setCode(text);
                       }
                     },
                     value: code, 
+                  },
+                  rules: {
+                    required: 'Code is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Code must be at least 6 characters long',
+                    },
                   },
                 },
               ]}
@@ -97,7 +99,6 @@ const verifyCode = () => {
               Submit
             </Button>
           </ScrollView>
-        )}
       </View>
     </>
   );
@@ -106,6 +107,15 @@ const verifyCode = () => {
 const styles = StyleSheet.create({
   containerStyle: {
     flex: 1,
+  },
+  instructionWrapper: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  instructionText: {
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
   },
   scrollViewStyle: {
     flex: 1,
