@@ -2,21 +2,21 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Avatar, Button, TextInput } from 'react-native-paper';
+import { Avatar, Button, TextInput } from 'react-native-paper';
 
 import HandleResponse from '@/components/common/HandleResponse';
-import { useAppDispatch } from '@/hooks/useRedux';
-import { useLoginMutation } from '@/services/user.service';
-import { initializeWebSocket, userLogin } from '@/store/slices/auth.slice';
 import { FormBuilder } from 'react-native-paper-form-builder';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface TwoFaForm {
   code: string;
 }
 
 const verifyCode = () => {
-  const dispatch = useAppDispatch();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.success);
 
   const { control, setFocus, handleSubmit, formState: { errors } } = useForm<TwoFaForm>({
     defaultValues: {
@@ -24,6 +24,16 @@ const verifyCode = () => {
     },
   });
 
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
+
+  useEffect(() => {
+    if (!isMounted && !isAuthenticated) {
+      router.navigate('/login');
+    }
+  }, [isMounted, isAuthenticated, router]);
+  
   useEffect(() => {
     setFocus('code');
   }, [setFocus]);
@@ -39,7 +49,7 @@ const verifyCode = () => {
   }; // to add logic to direct homepage (temporary use currently)
 
   const onSuccess = () => {
-      router.push('/');
+    router.push('/');
   };
 
   return (
@@ -111,6 +121,8 @@ const styles = StyleSheet.create({
   instructionWrapper: {
     marginBottom: 20,
     alignItems: 'center',
+    textAlign: 'center',
+    color: 'black',
   },
   instructionText: {
     fontSize: 16,
@@ -141,4 +153,3 @@ const styles = StyleSheet.create({
 });
 
 export default verifyCode;
-

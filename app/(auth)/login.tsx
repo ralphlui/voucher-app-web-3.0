@@ -76,6 +76,7 @@ const Login = () => {
   const onSuccess = () => {
     if (data) {
       dispatch(userLogin(data));
+      dispatch(setAuthData({ token: data.token, success: true }));
       dispatch(initializeWebSocket(data));
       router.push('/(auth)/2fa');
     }
@@ -93,7 +94,6 @@ const Login = () => {
           isError={isError}
           isSuccess={isSuccess}
           error={error || 'Error occurs'}
-          message={data?.message}
           onSuccess={onSuccess}
         />
       )}

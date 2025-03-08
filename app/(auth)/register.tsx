@@ -174,6 +174,7 @@ const Register = () => {
                       label: 'Customer',
                     },
                   ],
+                  defaultValue: '',
                 },
               ]}
             />
