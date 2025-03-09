@@ -13,6 +13,8 @@ import { categories } from '@/utils/categories';
 
 const Register = () => {
   const router = useRouter();
+  const { getValues } = useForm();
+
   const {
     formState: { errors },
     control,
@@ -23,6 +25,7 @@ const Register = () => {
       username: '',
       email: '',
       password: '',
+      confirmedPassword: '',
       role: '',
       preferences: [],
     },
@@ -127,6 +130,11 @@ const Register = () => {
                       value: true,
                       message: 'Password is required',
                     },
+                    pattern: {
+                      value:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
+                      message: 'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
+                    },
                     minLength: {
                       value: 8,
                       message: 'Password should be atleast 8 characters',
@@ -148,6 +156,11 @@ const Register = () => {
                     required: {
                       value: true,
                       message: 'Password is required',
+                    },
+                    pattern: {
+                      value:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
+                      message: 'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
                     },
                     minLength: {
                       value: 8,
@@ -182,6 +195,7 @@ const Register = () => {
                       label: 'Customer',
                     },
                   ],
+                  defaultValue: '',
                 },
               ]}
             />
