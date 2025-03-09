@@ -1,10 +1,11 @@
+import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { StyleSheet, View, ScrollView, Platform } from 'react-native';
+import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
 import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
-import { FormBuilder } from 'react-native-paper-form-builder';
 import { MultiSelectDropdown } from 'react-native-paper-dropdown';
+import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateUserMutation } from '@/services/user.service';
@@ -33,6 +34,13 @@ const Register = () => {
     router.push('/login');
   };
 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: 'YOUR_EXPO_CLIENT_ID',
+    iosClientId: 'YOUR_IOS_CLIENT_ID',
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
+    webClientId: 'YOUR_WEB_CLIENT_ID',
+  });
+
   return (
     <>
       <Stack.Screen
@@ -56,6 +64,19 @@ const Register = () => {
           <ScrollView contentContainerStyle={styles.scrollViewStyle}>
             <View style={styles.icon}>
               <Avatar.Icon icon="ticket-percent-outline" />
+            </View>
+            <Button
+              style={styles.button}
+              icon="google"
+              mode="contained"
+              onPress={() => promptAsync()}
+              disabled={!request}>
+              sign up with Google
+            </Button>
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>OR</Text>
+              <View style={styles.divider} />
             </View>
             <FormBuilder
               control={control}
@@ -224,6 +245,20 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#000',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    textAlign: 'center',
   },
 });
 
