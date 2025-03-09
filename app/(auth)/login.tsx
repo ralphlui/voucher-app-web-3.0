@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Platform } from 'react-native';
-import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
+import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
+import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
+import { useAppDispatch } from '@/hooks/useRedux';
 import { useLoginMutation } from '@/services/user.service';
 import { setAuthData, userLogin, initializeWebSocket } from '@/store/slices/auth.slice';
 import { logInSchema } from '@/utils/validation';
-import { FormBuilder } from 'react-native-paper-form-builder';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAppDispatch } from '@/hooks/useRedux';
 
 interface LoginFormData {
   email: string;
@@ -30,6 +32,13 @@ const Login = () => {
       email: '',
       password: '',
     },
+  });
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: 'YOUR_EXPO_CLIENT_ID',
+    iosClientId: 'YOUR_IOS_CLIENT_ID',
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
+    webClientId: 'YOUR_WEB_CLIENT_ID',
   });
 
   useEffect(() => {
@@ -105,6 +114,19 @@ const Login = () => {
             <View style={styles.icon}>
               <Avatar.Icon icon="ticket-percent-outline" />
             </View>
+            <Button
+              style={styles.button}
+              icon="google"
+              mode="contained"
+              onPress={() => promptAsync()}
+              disabled={!request}>
+              Login with Google
+            </Button>
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>OR</Text>
+              <View style={styles.divider} />
+            </View>
             <FormBuilder
               control={control}
               setFocus={setFocus}
@@ -136,19 +158,24 @@ const Login = () => {
             </Button>
             <Button
               style={styles.button}
+              icon="account-question"
+              mode="contained"
+              onPress={() => {}}>
+              Forget Password
+            </Button>
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>New Account?</Text>
+              <View style={styles.divider} />
+            </View>
+            <Button
+              style={[styles.button, styles.registerButton]}
               icon="account-plus"
               mode="contained"
               onPress={() => {
                 router.push('/register');
               }}>
               Register
-            </Button>
-            <Button
-              style={styles.button}
-              icon="account-question"
-              mode="contained"
-              onPress={() => {}}>
-              Forget Password
             </Button>
           </ScrollView>
         )}
@@ -181,6 +208,23 @@ const styles = StyleSheet.create({
   webStyle: {
     maxWidth: 300,
     alignSelf: 'center',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#000',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    textAlign: 'center',
+  },
+  registerButton: {
+    marginTop: 20,
   },
 });
 
