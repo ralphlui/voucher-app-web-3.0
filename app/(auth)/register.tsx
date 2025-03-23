@@ -1,19 +1,16 @@
 import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
 import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
-import { MultiSelectDropdown } from 'react-native-paper-dropdown';
 import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateUserMutation } from '@/services/user.service';
-import { categories } from '@/utils/categories';
 
 const Register = () => {
   const router = useRouter();
-  const { getValues } = useForm();
 
   const {
     formState: { errors },
@@ -27,7 +24,6 @@ const Register = () => {
       password: '',
       confirmedPassword: '',
       role: '',
-      preferences: [],
     },
     mode: 'onChange',
   });
@@ -199,31 +195,12 @@ const Register = () => {
                 },
               ]}
             />
-            <Controller
-              name="preferences"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <MultiSelectDropdown
-                  label="Preferences"
-                  options={categories}
-                  value={value}
-                  onSelect={onChange}
-                  mode="outlined"
-                />
-              )}
-              rules={{
-                required: {
-                  value: true,
-                  message: 'Preferences are required',
-                },
-              }}
-            />
             <Button
               style={styles.button}
               mode="contained"
-              onPress={handleSubmit(({ username, email, password, role, preferences }) => {
+              onPress={handleSubmit(({ username, email, password, role }) => {
                 createUser({
-                  body: { username, email, password, role, preferences },
+                  body: { username, email, password, role },
                 });
               })}>
               Register
