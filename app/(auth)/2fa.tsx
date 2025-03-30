@@ -1,15 +1,16 @@
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, Text } from 'react-native';
 import { Avatar, Button, TextInput } from 'react-native-paper';
 
-import HandleResponse from '@/components/common/HandleResponse';
+import { useAppDispatch } from '@/hooks/useRedux';
 import { useValidateOtpMutation } from '@/services/user.service';
 import { FormBuilder } from 'react-native-paper-form-builder';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAuthData } from '@/store/slices/auth.slice';
 
 interface TwoFaForm {
   otp: string;
@@ -17,9 +18,11 @@ interface TwoFaForm {
 
 const verifyCode = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.success);
   const [email, setEmail] = useState<string>('');
   const [otp, setOtp] = useState<string>('');
+  const message = 'Please key in your 6 digit code sent to your email within next 10 minutes.';
 
   const [validateOtp, { data, isSuccess, isError, isLoading, error }] = useValidateOtpMutation();
 
@@ -41,6 +44,35 @@ const verifyCode = () => {
     }
   }, [email, setFocus]);
 
+  // async function tryLocalSignin() {
+  //   dispatch(
+  //     setAuthData({
+  //       token: null,
+  //       success: false,
+  //     })
+  //   );
+  //   const token = await AsyncStorage.getItem('auth_token');
+  //   if (token) {
+  //     dispatch(
+  //       setAuthData({
+  //         token,
+  //         success: true,
+  //       })
+  //     );
+  //   } else {
+  //     dispatch(
+  //       setAuthData({
+  //         token: null,
+  //         success: false,
+  //       })
+  //     );
+  //   }
+  // }
+  
+  // useEffect(() => {
+  //   tryLocalSignin();
+  // }, []);
+
   const onSubmit = async ({ otp }: TwoFaForm) => { 
     const storedEmail = await AsyncStorage.getItem('userEmail');
     if (!storedEmail) {
@@ -48,11 +80,14 @@ const verifyCode = () => {
       return; 
     }
     setEmail(storedEmail);
-    console.log('Form submitted with:', { email: storedEmail, otp });
     try{
       const response = await validateOtp({body: { email: storedEmail, otp: otp }}).unwrap();
+      console.log('OTP validation response: ', response);
+      
       if (response.success){
         console.log('OTP validated successfully!');
+
+        dispatch(setAuthData({ token: 'placeholderToRemove', success: true }));
         router.push('/');
       }
     }
@@ -74,7 +109,7 @@ const verifyCode = () => {
               <Avatar.Icon icon="ticket-percent-outline" />
             </View>
             <View style={styles.instructionWrapper}>
-                Please key in your 6 digit code sent to your email within next 10 minutes.
+              <Text>{message}</Text>
             </View>
             <FormBuilder
               control={control}

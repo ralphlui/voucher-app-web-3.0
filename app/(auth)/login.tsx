@@ -11,7 +11,7 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 import HandleResponse from '@/components/common/HandleResponse';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { useGenerateOtpMutation, useLoginMutation } from '@/services/user.service';
-import { setAuthData, userLogin, initializeWebSocket } from '@/store/slices/auth.slice';
+import { userLogin, initializeWebSocket } from '@/store/slices/auth.slice';
 import { logInSchema } from '@/utils/validation';
 
 interface LoginFormData {
@@ -51,35 +51,6 @@ const Login = () => {
     setFocus('email');
   }, [setFocus]);
 
-  async function tryLocalSignin() {   // to test to move to 2fa file
-    dispatch(
-      setAuthData({
-        token: null,
-        success: false,
-      })
-    );
-    const token = await AsyncStorage.getItem('auth_token');
-    if (token) {
-      dispatch(
-        setAuthData({
-          token,
-          success: true,
-        })
-      );
-    } else {
-      dispatch(
-        setAuthData({
-          token: null,
-          success: false,
-        })
-      );
-    }
-  }
-
-  useEffect(() => {
-    tryLocalSignin();
-  }, []);
-
   const onSubmit = async ({ email, password }: LoginFormData) => {
     if (email && password) {
       login({
@@ -88,7 +59,7 @@ const Login = () => {
       try {
         await AsyncStorage.setItem('userEmail', email);
         const response = await generateOtp({body: { email: email}}).unwrap(); 
-        console.log('OTP generated successfully:', response); 
+        console.log('OTP generated successfully:', response);   
       } catch (err) {
         console.error('Error generating OTP:', err);
       }
@@ -96,9 +67,8 @@ const Login = () => {
   };
 
   const onSuccess = () => {
-    if (data) {
+    if (data){
       dispatch(userLogin(data));
-      dispatch(setAuthData({ token: data.token, success: true }));
       dispatch(initializeWebSocket(data));
       router.push('/(auth)/2fa');
     }

@@ -64,18 +64,16 @@ export const userApiSlice = userApi.injectEndpoints({
     }),
 
     refreshToken: builder.mutation({
-      query: ({ body }) => ({
+      query: () => ({
         url: '/api/users/refreshToken',
         method: 'POST',
-        body,
       }),
     }),
 
     verifyToken: builder.mutation({
-      query: ({ body }) => ({
+      query: () => ({
         url: '/api/users/validateToken',
         method: 'POST',
-        body,
       }),
     }),
   }),

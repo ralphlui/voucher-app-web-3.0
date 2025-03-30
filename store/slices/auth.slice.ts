@@ -10,7 +10,16 @@ interface WebSocketPayload {
     email: string;
     role: UserTypeEnum;
     username: string;
+    authProvider: string;
+    token: string;
   };
+}
+
+function getCookie(name: string) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return null;
 }
 
 let ws: WebSocket | null = null;
@@ -46,6 +55,7 @@ const initialState: Auth = {
   role: null,
   email: null,
   message: null,
+  authProvider: null,
 };
 
 const authSlice = createSlice({
@@ -57,27 +67,31 @@ const authSlice = createSlice({
         console.error('Error removing token:', err)
       );
       state.user = null;
+      state.userId = null;
       state.token = null;
       state.success = false;
       state.error = null;
       state.role = null;
       state.email = null;
+      state.authProvider = null;
     },
     userLogin: (
       state,
-      action: PayloadAction<{ token: string; data: WebSocketPayload['data'] }>
-    ) => {
-      if (action.payload.token) {
-        AsyncStorage.setItem('auth_token', action.payload.token).catch((err) =>
+      action: PayloadAction<{token: string; data: WebSocketPayload['data'] }>) => {
+      const token = action.payload.token;
+
+      if (token) {
+        AsyncStorage.setItem('auth_token', token).catch((err) =>
           console.error('Error storing token:', err)
         );
       }
-      state.token = action.payload.token;
+      state.token = token;
       state.success = true;
       state.email = action.payload.data.email;
       state.role = action.payload.data.role;
       state.user = action.payload.data.username;
       state.userId = action.payload.data.userID;
+      state.authProvider = action.payload.data.authProvider;
     },
     setWebSocketMessage: (state, action: PayloadAction<any>) => {
       state.message = action.payload;

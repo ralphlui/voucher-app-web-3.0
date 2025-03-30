@@ -8,6 +8,7 @@ export interface Auth {
   error?: string | null;
   role?: UserTypeEnum | null;
   email?: string | null;
+  authProvider?: string | null;
   message?: {
     campaignId?: string;
     storeName?: string;
