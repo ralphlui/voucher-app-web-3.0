@@ -47,22 +47,47 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
-    // deleteUser: builder.mutation({
-    //   query: ({ id }) => ({
-    //     url: `/api/user/${id}`,
-    //     method: 'DELETE',
-    //   }),
-    // }),
+    generateOtp: builder.mutation({
+      query: ({ body }) => ({
+        url: '/api/users/otp/generate',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    validateOtp: builder.mutation({
+      query: ({ body }) => ({
+        url: '/api/users/otp/validate',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    refreshToken: builder.mutation({
+      query: () => ({
+        url: '/api/users/refreshToken',
+        method: 'POST',
+      }),
+    }),
+
+    verifyToken: builder.mutation({
+      query: () => ({
+        url: '/api/users/validateToken',
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
   useLogoutMutation,
-  // useGetUserInfoQuery,
   useCreateUserMutation,
   useGetUsersQuery,
-  // useDeleteUserMutation,
   useEditUserMutation,
   useVerifyUserMutation,
+  useGenerateOtpMutation,
+  useValidateOtpMutation,
+  useRefreshTokenMutation,
+  useVerifyTokenMutation,
 } = userApiSlice;

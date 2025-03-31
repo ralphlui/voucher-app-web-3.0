@@ -1,56 +1,100 @@
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, Text } from 'react-native';
 import { Avatar, Button, TextInput } from 'react-native-paper';
 
-import HandleResponse from '@/components/common/HandleResponse';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { useValidateOtpMutation } from '@/services/user.service';
 import { FormBuilder } from 'react-native-paper-form-builder';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAuthData } from '@/store/slices/auth.slice';
 
 interface TwoFaForm {
-  code: string;
+  otp: string;
 }
 
 const verifyCode = () => {
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
+  const dispatch = useAppDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.success);
+  const [email, setEmail] = useState<string>('');
+  const [otp, setOtp] = useState<string>('');
+  const message = 'Please key in your 6 digit code sent to your email within next 10 minutes.';
 
-  const { control, setFocus, handleSubmit, formState: { errors } } = useForm<TwoFaForm>({
-    defaultValues: {
-      code: '',
-    },
-  });
-
-  // useEffect(() => {
-  //   setIsMounted(true);
-  // }, []);
+  const [validateOtp, { data, isSuccess, isError, isLoading, error }] = useValidateOtpMutation();
 
   useEffect(() => {
-    if (!isMounted && !isAuthenticated) {
+    if ( !isAuthenticated) {
       router.navigate('/login');
     }
-  }, [isMounted, isAuthenticated, router]);
+  }, [isAuthenticated, router]);
+
+  const { control, setFocus, handleSubmit } = useForm<TwoFaForm>({
+    defaultValues: {
+      otp: ''
+    },
+  });
   
   useEffect(() => {
-    setFocus('code');
-  }, [setFocus]);
-
-  const [code, setCode] = useState<string>('');
-
-  const onSubmit = (data: TwoFaForm) => {
-    if (data.code.length >= 6) {
-      onSuccess();
-    } else {
-      alert('The code must be at least 6 characters long');
+    if (email){
+      setFocus('otp');
     }
-  }; // to add logic to direct homepage (temporary use currently)
+  }, [email, setFocus]);
 
-  const onSuccess = () => {
-    router.push('/');
-  };
+  // async function tryLocalSignin() {
+  //   dispatch(
+  //     setAuthData({
+  //       token: null,
+  //       success: false,
+  //     })
+  //   );
+  //   const token = await AsyncStorage.getItem('auth_token');
+  //   if (token) {
+  //     dispatch(
+  //       setAuthData({
+  //         token,
+  //         success: true,
+  //       })
+  //     );
+  //   } else {
+  //     dispatch(
+  //       setAuthData({
+  //         token: null,
+  //         success: false,
+  //       })
+  //     );
+  //   }
+  // }
+  
+  // useEffect(() => {
+  //   tryLocalSignin();
+  // }, []);
+
+  const onSubmit = async ({ otp }: TwoFaForm) => { 
+    const storedEmail = await AsyncStorage.getItem('userEmail');
+    if (!storedEmail) {
+      console.error('Email is not retrieved or is empty! Cannot submit form.');
+      return; 
+    }
+    setEmail(storedEmail);
+    try{
+      const response = await validateOtp({body: { email: storedEmail, otp: otp }}).unwrap();
+      console.log('OTP validation response: ', response);
+      
+      if (response.success){
+        console.log('OTP validated successfully!');
+
+        dispatch(setAuthData({ token: 'placeholderToRemove', success: true }));
+        router.push('/');
+      }
+    }
+    catch (err){
+      console.log('Error in validating OTP:  ', err);
+    }
+  }; 
 
   return (
     <>
@@ -59,60 +103,63 @@ const verifyCode = () => {
           title: '2FA',
         }}
       />
-      {(errors.code) && (
-        <HandleResponse
-          isError={true}
-          message={errors.code?.message || 'Invalid Code'}
-        />
-      )}
       <View style={[styles.containerStyle, Platform.OS === 'web' && styles.webStyle]}>
           <ScrollView contentContainerStyle={styles.scrollViewStyle}>
             <View style={styles.icon}>
               <Avatar.Icon icon="ticket-percent-outline" />
             </View>
             <View style={styles.instructionWrapper}>
-                Please key in your 6 digit code sent to your email.
+              <Text>{message}</Text>
             </View>
             <FormBuilder
               control={control}
               setFocus={setFocus}
               formConfigArray={[
                 {
-                  name: 'code',
+                  name: 'otp',
                   type: 'text',
                   textInputProps: {
-                    label: 'code',
+                    label: 'otp',
                     left: <TextInput.Icon icon="code-json" />,
                     keyboardType: 'numeric',
                     onChangeText: (text) => {
                       if (/^\d+$/.test(text)) {
-                        setCode(text);
+                        setOtp(text);
                       }
                     },
-                    value: code, 
+                    value: otp, 
                   },
                   rules: {
-                    required: 'Code is required',
+                    required: 'OTP is required',
                     minLength: {
                       value: 6,
-                      message: 'Code must be at least 6 characters long',
+                      message: 'OTP key in must be at least 6 characters long',
                     },
                   },
                 },
               ]}
             />
-            <Button
-              style={styles.button}
-              icon="login"
-              mode="contained"
-              onPress={handleSubmit(onSubmit)}>
-              Submit
-            </Button>
+            <View style={styles.buttonContainer}>
+              <Button
+                style={styles.button}
+                icon="keyboard-return"
+                mode="contained"
+                onPress={() => {router.navigate('/login')}}>
+                Back
+              </Button>
+              <Button
+                style={styles.button}
+                icon="login"
+                mode="contained"
+                onPress={handleSubmit(onSubmit)}>
+                Submit
+              </Button>
+            </View>
           </ScrollView>
       </View>
     </>
   );
-};
+};   // verify back button works
 
 const styles = StyleSheet.create({
   containerStyle: {
@@ -145,6 +192,12 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    width: '100%', 
+    paddingHorizontal: 10, 
   },
   webStyle: {
     maxWidth: 300,
