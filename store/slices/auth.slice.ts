@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Auth } from '@/types/Auth';
 import { RootState } from '@/store';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
@@ -14,37 +14,6 @@ interface WebSocketPayload {
     token: string;
   };
 }
-
-function getCookie(name: string) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift();
-  return null;
-}
-
-let ws: WebSocket | null = null;
-
-export const initializeWebSocket = createAsyncThunk<void, WebSocketPayload>(
-  'auth/initializeWebSocket',
-  async (payload, { dispatch, getState }) => {
-    const state = getState() as RootState;
-    ws = new WebSocket(
-      `${process.env.EXPO_PUBLIC_FEED_SOCKET_URL}?userId=${payload.data.userID}`
-    );
-    ws.addEventListener('open', () => {
-      console.log('Web Socket Session Opened.');
-      ws?.send(JSON.stringify(payload.data));
-    });
-    ws.addEventListener('message', (event) => {
-      console.log('Message received: ', event.data);
-      const message = JSON.parse(event.data);
-      dispatch(setWebSocketMessage(message));
-    });
-    ws.addEventListener('close', () => {
-      console.log('WebSocket closed!');
-    });
-  }
-);
 
 const initialState: Auth = {
   user: null,
@@ -78,6 +47,8 @@ const authSlice = createSlice({
     userLogin: (
       state,
       action: PayloadAction<{token: string; data: WebSocketPayload['data'] }>) => {
+      // const token = getCookie('access_token');
+      // console.log('Token from cookie:', token); 
       const token = action.payload.token;
 
       if (token) {
@@ -93,9 +64,6 @@ const authSlice = createSlice({
       state.userId = action.payload.data.userID;
       state.authProvider = action.payload.data.authProvider;
     },
-    setWebSocketMessage: (state, action: PayloadAction<any>) => {
-      state.message = action.payload;
-    },
     setAuthData: (state, action: PayloadAction<{ token: string | null; success: boolean }>) => {
       state.token = action.payload.token;
       state.success = action.payload.success;
@@ -103,6 +71,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { userLogout, userLogin, setAuthData, setWebSocketMessage } = authSlice.actions;
+export const { userLogout, userLogin, setAuthData } = authSlice.actions;
 
 export default authSlice.reducer;
