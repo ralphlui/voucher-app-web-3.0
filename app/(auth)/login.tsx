@@ -11,7 +11,7 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 import HandleResponse from '@/components/common/HandleResponse';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { useGenerateOtpMutation, useLoginMutation } from '@/services/user.service';
-import { userLogin, initializeWebSocket } from '@/store/slices/auth.slice';
+import { userLogin } from '@/store/slices/auth.slice';
 import { logInSchema } from '@/utils/validation';
 
 interface LoginFormData {
@@ -69,7 +69,6 @@ const Login = () => {
   const onSuccess = () => {
     if (data){
       dispatch(userLogin(data));
-      dispatch(initializeWebSocket(data));
       router.push('/(auth)/2fa');
     }
   };
