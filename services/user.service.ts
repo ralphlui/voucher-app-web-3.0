@@ -47,12 +47,21 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
-    // deleteUser: builder.mutation({
-    //   query: ({ id }) => ({
-    //     url: `/api/user/${id}`,
-    //     method: 'DELETE',
-    //   }),
-    // }),
+    googleLogin: builder.mutation({
+      query: ({ body }) => ({
+        url: '/auth/google', // adjust this to match your backend endpoint
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    googleRegister: builder.mutation({
+      query: ({ body }) => ({
+        url: '/auth/google/',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -65,4 +74,6 @@ export const {
   // useDeleteUserMutation,
   useEditUserMutation,
   useVerifyUserMutation,
+  useGoogleLoginMutation,
+  useGoogleRegisterMutation,
 } = userApiSlice;
