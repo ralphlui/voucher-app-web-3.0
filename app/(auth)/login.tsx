@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,8 +12,12 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useAppDispatch } from '@/hooks/useRedux';
-import { useLoginMutation, useGoogleLoginMutation } from '@/services/user.service';
-import { setAuthData, userLogin, initializeWebSocket } from '@/store/slices/auth.slice';
+import {
+  useGenerateOtpMutation,
+  useLoginMutation,
+  useGoogleLoginMutation,
+} from '@/services/user.service';
+import { userLogin } from '@/store/slices/auth.slice';
 import { logInSchema } from '@/utils/validation';
 
 interface LoginFormData {
@@ -28,9 +32,10 @@ const Login = () => {
   const router = useRouter();
 
   const [login, { data, isSuccess, isError, isLoading, error }] = useLoginMutation();
+  const [generateOtp, { isLoading: isGeneratingOtp }] = useGenerateOtpMutation();
   const [googleLogin] = useGoogleLoginMutation();
 
-  const { control, setFocus, handleSubmit } = useForm<LoginFormData>({
+  const { control, setFocus, handleSubmit, reset } = useForm<LoginFormData>({
     resolver: yupResolver(logInSchema),
     defaultValues: {
       email: '',
@@ -38,17 +43,23 @@ const Login = () => {
     },
   });
 
+  useFocusEffect(
+    React.useCallback(() => {
+      reset({ email: '', password: '' });
+    }, [reset])
+  );
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
-    webClientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
-    responseType: 'id_token',
-    redirectUri: Platform.select({
-      web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
-      default: makeRedirectUri({
-        native: 'voucher-app://',
-      }),
-    }),
-    scopes: ['profile', 'email'],
+     webClientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
+     responseType: 'id_token',
+     redirectUri: Platform.select({
+       web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+       default: makeRedirectUri({
+         native: 'voucher-app://',
+       }),
+     }),
+     scopes: ['profile', 'email'],
   });
 
   useEffect(() => {
@@ -71,7 +82,7 @@ const Login = () => {
 
       if (response?.type === 'success') {
         const { id_token } = response.params;
-        console.log('=== Google Auth Success ===');
+        console.log('=== Google Auth Success at Login ===');
         console.log('ID Token:', id_token);
 
         // Send Google token to backend
@@ -85,7 +96,6 @@ const Login = () => {
             console.log('=== Backend Response ===');
             console.log('Login success:', data);
             dispatch(userLogin(data));
-            dispatch(initializeWebSocket(data));
             router.push('/');
           })
           .catch((error) => {
@@ -100,48 +110,25 @@ const Login = () => {
     setFocus('email');
   }, [setFocus]);
 
-  async function tryLocalSignin() {
-    dispatch(
-      setAuthData({
-        token: null,
-        success: false,
-      })
-    );
-    const token = await AsyncStorage.getItem('auth_token');
-    if (token) {
-      dispatch(
-        setAuthData({
-          token,
-          success: true,
-        })
-      );
-    } else {
-      dispatch(
-        setAuthData({
-          token: null,
-          success: false,
-        })
-      );
-    }
-  }
-
-  useEffect(() => {
-    tryLocalSignin();
-  }, []);
-
-  const onSubmit = ({ email, password }: LoginFormData) => {
+  const onSubmit = async ({ email, password }: LoginFormData) => {
     if (email && password) {
       login({
         body: { email, password },
       });
+      try {
+        await AsyncStorage.setItem('userEmail', email);
+        const response = await generateOtp({ body: { email: email } }).unwrap();
+        console.log('OTP generated successfully:', response);
+      } catch (err) {
+        console.error('Error generating OTP:', err);
+      }
     }
   };
 
   const onSuccess = () => {
     if (data) {
       dispatch(userLogin(data));
-      dispatch(initializeWebSocket(data));
-      router.push('/');
+      router.push('/(auth)/2fa');
     }
   };
 
@@ -157,12 +144,11 @@ const Login = () => {
           isError={isError}
           isSuccess={isSuccess}
           error={error || 'Error occurs'}
-          message={data?.message}
           onSuccess={onSuccess}
         />
       )}
       <View style={[styles.containerStyle, Platform.OS === 'web' && styles.webStyle]}>
-        {isLoading ? (
+        {isLoading || isGeneratingOtp ? (
           <ActivityIndicator size="large" />
         ) : (
           <ScrollView contentContainerStyle={styles.scrollViewStyle}>

@@ -47,6 +47,35 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
+    generateOtp: builder.mutation({
+      query: ({ body }) => ({
+        url: '/api/users/otp/generate',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    validateOtp: builder.mutation({
+      query: ({ body }) => ({
+        url: '/api/users/otp/validate',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    refreshToken: builder.mutation({
+      query: () => ({
+        url: '/api/users/refreshToken',
+        method: 'POST',
+      }),
+    }),
+
+    verifyToken: builder.mutation({
+      query: () => ({
+        url: '/api/users/validateToken',
+        method: 'POST',
+      }),
+    }),
     googleLogin: builder.mutation({
       query: ({ body }) => ({
         url: '/auth/google', // adjust this to match your backend endpoint
@@ -54,7 +83,6 @@ export const userApiSlice = userApi.injectEndpoints({
         body,
       }),
     }),
-
     googleRegister: builder.mutation({
       query: ({ body }) => ({
         url: '/auth/google/',
@@ -68,12 +96,14 @@ export const userApiSlice = userApi.injectEndpoints({
 export const {
   useLoginMutation,
   useLogoutMutation,
-  // useGetUserInfoQuery,
   useCreateUserMutation,
   useGetUsersQuery,
-  // useDeleteUserMutation,
   useEditUserMutation,
   useVerifyUserMutation,
+  useGenerateOtpMutation,
+  useValidateOtpMutation,
+  useRefreshTokenMutation,
+  useVerifyTokenMutation,
   useGoogleLoginMutation,
   useGoogleRegisterMutation,
 } = userApiSlice;

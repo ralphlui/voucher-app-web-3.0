@@ -3,20 +3,19 @@ import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
 import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
-import { MultiSelectDropdown } from 'react-native-paper-dropdown';
 import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateUserMutation, useGoogleRegisterMutation } from '@/services/user.service';
-import { categories } from '@/utils/categories';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const Register = () => {
   const router = useRouter();
+
   const {
     formState: { errors },
     control,
@@ -27,14 +26,17 @@ const Register = () => {
       username: '',
       email: '',
       password: '',
+      confirmedPassword: '',
       role: '',
-      preferences: [],
     },
     mode: 'onChange',
   });
-
   const [createUser, { data, isSuccess, isError, isLoading, error }] = useCreateUserMutation();
   const [googleRegister] = useGoogleRegisterMutation();
+
+  const onSuccess = () => {
+    router.push('/login');
+  };
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
@@ -52,7 +54,7 @@ const Register = () => {
   useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
-      console.log('=== Google Auth Success ===');
+      console.log('=== Google Auth Success at Register ===');
         console.log('ID Token:', id_token);
       handleGoogleSignIn(id_token);
     }
@@ -83,10 +85,6 @@ const Register = () => {
       })
     );
   }, []);
-
-  const onSuccess = () => {
-    router.push('/login');
-  };
 
   return (
     <>
@@ -174,6 +172,12 @@ const Register = () => {
                       value: true,
                       message: 'Password is required',
                     },
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
+                      message:
+                        'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
+                    },
                     minLength: {
                       value: 8,
                       message: 'Password should be atleast 8 characters',
@@ -195,6 +199,12 @@ const Register = () => {
                     required: {
                       value: true,
                       message: 'Password is required',
+                    },
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
+                      message:
+                        'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
                     },
                     minLength: {
                       value: 8,
@@ -229,34 +239,16 @@ const Register = () => {
                       label: 'Customer',
                     },
                   ],
+                  defaultValue: '',
                 },
               ]}
-            />
-            <Controller
-              name="preferences"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <MultiSelectDropdown
-                  label="Preferences"
-                  options={categories}
-                  value={value}
-                  onSelect={onChange}
-                  mode="outlined"
-                />
-              )}
-              rules={{
-                required: {
-                  value: true,
-                  message: 'Preferences are required',
-                },
-              }}
             />
             <Button
               style={styles.button}
               mode="contained"
-              onPress={handleSubmit(({ username, email, password, role, preferences }) => {
+              onPress={handleSubmit(({ username, email, password, role }) => {
                 createUser({
-                  body: { username, email, password, role, preferences },
+                  body: { username, email, password, role },
                 });
               })}>
               Register
