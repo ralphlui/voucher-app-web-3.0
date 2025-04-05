@@ -1,7 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
@@ -10,7 +12,11 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useAppDispatch } from '@/hooks/useRedux';
-import { useGenerateOtpMutation, useLoginMutation } from '@/services/user.service';
+import {
+  useGenerateOtpMutation,
+  useLoginMutation,
+  useGoogleLoginMutation,
+} from '@/services/user.service';
 import { userLogin } from '@/store/slices/auth.slice';
 import { logInSchema } from '@/utils/validation';
 
@@ -19,12 +25,15 @@ interface LoginFormData {
   password: string;
 }
 
+WebBrowser.maybeCompleteAuthSession();
+
 const Login = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   const [login, { data, isSuccess, isError, isLoading, error }] = useLoginMutation();
-  const [generateOtp, { isLoading: isGeneratingOtp }] = useGenerateOtpMutation(); 
+  const [generateOtp, { isLoading: isGeneratingOtp }] = useGenerateOtpMutation();
+  const [googleLogin] = useGoogleLoginMutation();
 
   const { control, setFocus, handleSubmit, reset } = useForm<LoginFormData>({
     resolver: yupResolver(logInSchema),
@@ -41,11 +50,61 @@ const Login = () => {
   );
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: 'YOUR_EXPO_CLIENT_ID',
-    iosClientId: 'YOUR_IOS_CLIENT_ID',
-    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-    webClientId: 'YOUR_WEB_CLIENT_ID',
+    clientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
+     webClientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
+     responseType: 'id_token',
+     redirectUri: Platform.select({
+       web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+       default: makeRedirectUri({
+         native: 'voucher-app://',
+       }),
+     }),
+     scopes: ['profile', 'email'],
   });
+
+  useEffect(() => {
+    // Log redirect URI when component mounts
+    console.log('=== Google Auth Configuration ===');
+    console.log(
+      'Redirect URI:',
+      Platform.select({
+        web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+        default: makeRedirectUri({
+          native: 'voucher-app://',
+        }),
+      })
+    );
+
+    if (response) {
+      console.log('=== Google Auth Response ===');
+      console.log('Response type:', response.type);
+      console.log('Full response:', response);
+
+      if (response?.type === 'success') {
+        const { id_token } = response.params;
+        console.log('=== Google Auth Success at Login ===');
+        console.log('ID Token:', id_token);
+
+        // Send Google token to backend
+        googleLogin({
+          body: {
+            token: id_token,
+          },
+        })
+          .unwrap()
+          .then((data) => {
+            console.log('=== Backend Response ===');
+            console.log('Login success:', data);
+            dispatch(userLogin(data));
+            router.push('/');
+          })
+          .catch((error) => {
+            console.error('=== Backend Error ===');
+            console.error('Google login failed:', error);
+          });
+      }
+    }
+  }, [response]);
 
   useEffect(() => {
     setFocus('email');
@@ -58,8 +117,8 @@ const Login = () => {
       });
       try {
         await AsyncStorage.setItem('userEmail', email);
-        const response = await generateOtp({body: { email: email}}).unwrap(); 
-        console.log('OTP generated successfully:', response);   
+        const response = await generateOtp({ body: { email: email } }).unwrap();
+        console.log('OTP generated successfully:', response);
       } catch (err) {
         console.error('Error generating OTP:', err);
       }
@@ -67,7 +126,7 @@ const Login = () => {
   };
 
   const onSuccess = () => {
-    if (data){
+    if (data) {
       dispatch(userLogin(data));
       router.push('/(auth)/2fa');
     }

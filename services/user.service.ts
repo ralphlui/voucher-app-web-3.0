@@ -76,6 +76,20 @@ export const userApiSlice = userApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    googleLogin: builder.mutation({
+      query: ({ body }) => ({
+        url: '/auth/google', // adjust this to match your backend endpoint
+        method: 'POST',
+        body,
+      }),
+    }),
+    googleRegister: builder.mutation({
+      query: ({ body }) => ({
+        url: '/auth/google/',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -90,4 +104,6 @@ export const {
   useValidateOtpMutation,
   useRefreshTokenMutation,
   useVerifyTokenMutation,
+  useGoogleLoginMutation,
+  useGoogleRegisterMutation,
 } = userApiSlice;
