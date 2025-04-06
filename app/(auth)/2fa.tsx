@@ -90,7 +90,6 @@ const verifyCode = () => {
         const token = document.cookie.startsWith('access_token=') 
         ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
         : null;
-        // to clean up this code, use document.cookie to get the access_token to store in variable
         console.log('Token from cookie:', token);
 
         if (!token) {
