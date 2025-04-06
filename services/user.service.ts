@@ -37,7 +37,7 @@ export const userApiSlice = userApi.injectEndpoints({
       query: ({ page }) => ({
         headers: {
           'Content-Type': 'application/json', 
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/user?page=${page}`,
         method: 'GET',
@@ -48,7 +48,7 @@ export const userApiSlice = userApi.injectEndpoints({
       query: ({ body }) => ({
         headers: {
           'Content-Type': 'application/json', 
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: '/api/users',
         method: 'PUT',
@@ -82,10 +82,26 @@ export const userApiSlice = userApi.injectEndpoints({
     verifyToken: builder.mutation({
       query: () => ({
         headers: {
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: '/api/users/validateToken',
         method: 'POST',
+      }),
+    }),
+
+    googleLogin: builder.mutation({
+      query: ({ body }) => ({
+        url: '/auth/google', // adjust this to match your backend endpoint
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    googleRegister: builder.mutation({
+      query: ({ body }) => ({
+        url: '/auth/google/',
+        method: 'POST',
+        body,
       }),
     }),
   }),
@@ -102,4 +118,6 @@ export const {
   useValidateOtpMutation,
   useRefreshTokenMutation,
   useVerifyTokenMutation,
+  useGoogleLoginMutation,
+  useGoogleRegisterMutation,
 } = userApiSlice;

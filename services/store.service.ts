@@ -7,7 +7,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/stores?query=${description}&page=${page_number}&size=${page_size}`,
         method: 'GET',
@@ -32,7 +32,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: ({ createdBy, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/stores/users`,
         method: 'POST',
@@ -58,7 +58,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: ({ userId }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/stores/users/${userId}`,
         method: 'POST',
@@ -69,7 +69,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: ({ id }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/stores/my-store`,
         method: 'POST',
@@ -80,7 +80,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: (formData: FormData) => ({
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/stores`,
         method: 'POST',
@@ -92,7 +92,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: (formData: FormData) => ({
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/stores`,
         method: 'PUT',

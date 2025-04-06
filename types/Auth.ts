@@ -14,4 +14,5 @@ export interface Auth {
     storeName?: string;
     campaignDescription?: string;
   } | null;
+  expiryTime?: number | null;
 }

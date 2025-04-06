@@ -51,7 +51,7 @@ const verifyCode = () => {
   //       success: false,
   //     })
   //   );
-  //   const token = await AsyncStorage.getItem('auth_token');
+  //   const token = await AsyncStorage.getItem('access_token');
   //   if (token) {
   //     dispatch(
   //       setAuthData({
@@ -92,15 +92,14 @@ const verifyCode = () => {
         : null;
         // to clean up this code, use document.cookie to get the access_token to store in variable
         console.log('Token from cookie:', token);
-        
+
         if (!token) {
           console.error('Token not found in cookies!');
           return;
         }
         dispatch(userLogin({ token: token, data: response.data }));
-        dispatch(setAuthData({ token: token, success: true }));
+        dispatch(setAuthData({ token: token, success: true, expiryTime: Date.now() + 60 * 60 * 1000 }));
         router.push('/');
-       // set expiry date to 1 hour in header, then call refreshToken as n when
       }
     }
     catch (err){

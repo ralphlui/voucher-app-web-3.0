@@ -7,7 +7,7 @@ export const feedApiSlice = feedApi.injectEndpoints({
       query: ({ userId, page_size = 5, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
         },
         url: `/api/feeds/users`,
         method: 'POST',
@@ -33,7 +33,7 @@ export const feedApiSlice = feedApi.injectEndpoints({
       query: ({body}) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
         },
         url: `/api/feeds/id`,
         method: 'POST',
@@ -44,7 +44,7 @@ export const feedApiSlice = feedApi.injectEndpoints({
       query: ({feedId}) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
         },
         url: `/api/feeds/readStatus`,
         method: 'PATCH',

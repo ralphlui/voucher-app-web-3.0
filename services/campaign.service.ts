@@ -8,7 +8,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-        //  Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
         },
         url: `/api/core/campaigns?description=${description}&page=${page_number}&size=${page_size}`,
         method: 'GET',
@@ -33,7 +32,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ description, userId, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
         },
         url: `/api/core/campaigns/users`,
         method: 'POST',
@@ -60,7 +59,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ storeId, status, description, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/campaigns/stores`,
         method: 'POST',
@@ -86,7 +85,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ id }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/campaigns/`,
         method: 'POST',
@@ -97,7 +96,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: (campaign: Campaign) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/campaigns`,
         method: 'POST',
@@ -111,7 +110,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: (campaign: Campaign) => ({
         headers:{
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`
         },
         url: `/api/core/campaigns/update`,
         method: 'PUT',
@@ -125,7 +124,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ userId, campaignId }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/campaigns/promote`,
         method: 'PATCH',

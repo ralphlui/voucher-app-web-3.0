@@ -7,7 +7,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ userId, status, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,   
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,   
         }, 
         url: `/api/core/vouchers/users`,
         method: 'POST',
@@ -33,7 +33,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ campaignId, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         }, 
         url: `/api/core/vouchers/campaigns`,
         method: 'POST',
@@ -59,7 +59,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({voucherId}) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/vouchers`,
         method: 'POST',
@@ -70,7 +70,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ campaignId, claimedBy }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: '/api/core/vouchers/claim',
         method: 'POST',
@@ -81,7 +81,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ voucherId }) => ({
         headers: {
           'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/core/vouchers/consume`,
         method: 'PATCH',

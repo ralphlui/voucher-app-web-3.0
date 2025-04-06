@@ -1,13 +1,17 @@
+import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
 import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
 import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
-import { useCreateUserMutation } from '@/services/user.service';
+import { useCreateUserMutation, useGoogleRegisterMutation } from '@/services/user.service';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const Register = () => {
   const router = useRouter();
@@ -28,17 +32,59 @@ const Register = () => {
     mode: 'onChange',
   });
   const [createUser, { data, isSuccess, isError, isLoading, error }] = useCreateUserMutation();
+  const [googleRegister] = useGoogleRegisterMutation();
 
   const onSuccess = () => {
     router.push('/login');
   };
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: 'YOUR_EXPO_CLIENT_ID',
-    iosClientId: 'YOUR_IOS_CLIENT_ID',
-    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-    webClientId: 'YOUR_WEB_CLIENT_ID',
+    clientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
+    webClientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
+    responseType: 'id_token',
+    redirectUri: Platform.select({
+      web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+      default: makeRedirectUri({
+        native: 'voucher-app://',
+      }),
+    }),
+    scopes: ['profile', 'email'],
   });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      console.log('=== Google Auth Success at Register ===');
+        console.log('ID Token:', id_token);
+      handleGoogleSignIn(id_token);
+    }
+  }, [response]);
+
+  const handleGoogleSignIn = async (token: string) => {
+    try {
+      const result = await googleRegister({
+        body: { googleToken: token },
+      }).unwrap();
+
+      if (result) {
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error('Google sign in error:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(
+      'Redirect URI:',
+      Platform.select({
+        web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+        default: makeRedirectUri({
+          native: 'voucher-app://',
+        }),
+      })
+    );
+  }, []);
 
   return (
     <>
@@ -70,7 +116,7 @@ const Register = () => {
               mode="contained"
               onPress={() => promptAsync()}
               disabled={!request}>
-              sign up with Google
+              Sign up with Google
             </Button>
             <View style={styles.dividerContainer}>
               <View style={styles.divider} />
@@ -128,8 +174,9 @@ const Register = () => {
                     },
                     pattern: {
                       value:
-                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
-                      message: 'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
+                      message:
+                        'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
                     },
                     minLength: {
                       value: 8,
@@ -155,8 +202,9 @@ const Register = () => {
                     },
                     pattern: {
                       value:
-                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
-                      message: 'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/,
+                      message:
+                        'Password should contain at least 1 Uppercase letter, 1 Lowercase letter, 1 number and 1 special character',
                     },
                     minLength: {
                       value: 8,

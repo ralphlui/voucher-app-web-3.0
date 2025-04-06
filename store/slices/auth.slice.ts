@@ -23,6 +23,7 @@ const initialState: Auth = {
   email: null,
   message: null,
   authProvider: null,
+  expiryTime: null,
 };
 
 const authSlice = createSlice({
@@ -30,7 +31,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     userLogout: (state) => {
-      AsyncStorage.removeItem('auth_token').catch((err) =>
+      AsyncStorage.removeItem('access_token').catch((err) =>
         console.error('Error removing token:', err)
       );
       state.user = null;
@@ -41,6 +42,7 @@ const authSlice = createSlice({
       state.role = null;
       state.email = null;
       state.authProvider = null;
+      state.expiryTime = null;
     },
     userLogin: (
       state,
@@ -48,7 +50,7 @@ const authSlice = createSlice({
       const token = action.payload.token;
 
       if (token) {
-        AsyncStorage.setItem('auth_token', token).catch((err) =>
+        AsyncStorage.setItem('access_token', token).catch((err) =>
           console.error('Error storing token:', err)
         );
       }
@@ -60,9 +62,11 @@ const authSlice = createSlice({
       state.userId = action.payload.data.userID;
       state.authProvider = action.payload.data.authProvider;
     },
-    setAuthData: (state, action: PayloadAction<{ token: string | null; success: boolean }>) => {
+    setAuthData: (state, action: PayloadAction<{ token: string | null; success: boolean; expiryTime: number | null }>) => {
       state.token = action.payload.token;
       state.success = action.payload.success;
+      state.expiryTime = action.payload.expiryTime;
+      AsyncStorage.setItem('accessTokenExpiry', action.payload.expiryTime!.toString());
     },
   },
 });
