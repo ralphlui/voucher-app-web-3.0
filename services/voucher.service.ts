@@ -1,4 +1,5 @@
 import coreApi from '@/services/core.api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const voucherApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -6,9 +7,12 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ userId, status, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-        },
-        url: `/api/core/vouchers/users/${userId}?status=${status}&page=${page_number}&size=${page_size}`,
-        method: 'GET',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,   
+        }, 
+        url: `/api/core/vouchers/users`,
+        method: 'POST',
+        body: JSON.stringify({userId}),
+        params: {status, page_size, page_number},
       }),
       providesTags: ['Voucher'],
       serializeQueryArgs: ({ endpointName }) => {
@@ -29,9 +33,12 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ campaignId, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
-        },
-        url: `/api/core/vouchers/campaigns/${campaignId}?page=${page_number}&size=${page_size}`,
-        method: 'GET',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+        }, 
+        url: `/api/core/vouchers/campaigns`,
+        method: 'POST',
+        body: JSON.stringify({campaignId}),
+        params: {page_size, page_number},
       }),
       providesTags: ['Voucher'],
       serializeQueryArgs: ({ endpointName }) => {
@@ -48,19 +55,22 @@ export const voucherApiSlice = coreApi.injectEndpoints({
         return currentArg !== previousArg;
       },
     }),
-    getVoucherById: builder.query({
-      query: (id: string) => ({
+    getVoucherById: builder.mutation({
+      query: ({voucherId}) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
         },
-        url: `/api/core/vouchers/${id}`,
-        method: 'GET',
+        url: `/api/core/vouchers`,
+        method: 'POST',
+        body: JSON.stringify({voucherId}),
       }),
     }),
     claimVoucher: builder.mutation({
       query: ({ campaignId, claimedBy }) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
         },
         url: '/api/core/vouchers/claim',
         method: 'POST',
@@ -71,8 +81,9 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ voucherId }) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
         },
-        url: `/api/core/vouchers/${voucherId}/consume`,
+        url: `/api/core/vouchers/consume`,
         method: 'PATCH',
         body: JSON.stringify({ voucherId }),
       }),
@@ -82,7 +93,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
 
 export const {
   useGetVouchersByUserIdQuery,
-  useGetVoucherByIdQuery,
+  useGetVoucherByIdMutation,
   useGetVouchersByCampaignIdQuery,
   useClaimVoucherMutation,
   useConsumeVoucherMutation,

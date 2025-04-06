@@ -1,5 +1,6 @@
 import coreApi from '@/services/core.api';
 import { Campaign } from '@/types/Campaign';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const campaignApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,6 +8,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
+        //  Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
         },
         url: `/api/core/campaigns?description=${description}&page=${page_number}&size=${page_size}`,
         method: 'GET',
@@ -31,9 +33,12 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ description, userId, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`, 
         },
-        url: `/api/core/campaigns/users/${userId}?description=${description}&page=${page_number}&size=${page_size}`,
-        method: 'GET',
+        url: `/api/core/campaigns/users`,
+        method: 'POST',
+        body: {userId},
+        params: { description, page_size, page_number },
       }),
       providesTags: (result, error, { userId }) => [{ type: 'Campaign', id: `USER_${userId}` }],
       serializeQueryArgs: ({ endpointName }) => {
@@ -55,9 +60,12 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ storeId, status, description, page_size = 10, page_number = 0 }) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
         },
-        url: `/api/core/campaigns/stores/${storeId}?status=${status}&page=${page_number}&size=${page_size}`,
-        method: 'GET',
+        url: `/api/core/campaigns/stores`,
+        method: 'POST',
+        body: { storeId },
+        params: { status, description, page_size, page_number },
       }),
       providesTags: ['Campaign'],
       serializeQueryArgs: ({ endpointName }) => {
@@ -78,13 +86,19 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ id }) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
         },
-        url: `/api/core/campaigns/${id}`,
-        method: 'GET',
+        url: `/api/core/campaigns/`,
+        method: 'POST',
+        body: { id },
       }),
     }),
     createCampaign: builder.mutation({
       query: (campaign: Campaign) => ({
+        headers: {
+          'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+        },
         url: `/api/core/campaigns`,
         method: 'POST',
         body: campaign,
@@ -95,7 +109,11 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     updateCampaign: builder.mutation({
       query: (campaign: Campaign) => ({
-        url: `/api/core/campaigns/${campaign.campaignId}`,
+        headers:{
+          'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`
+        },
+        url: `/api/core/campaigns/update`,
         method: 'PUT',
         body: campaign,
       }),
@@ -105,8 +123,13 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     promoteCampaign: builder.mutation({
       query: ({ userId, campaignId }) => ({
-        url: `/api/core/campaigns/${campaignId}/users/${userId}/promote`,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('auth_token')}`,
+        },
+        url: `/api/core/campaigns/promote`,
         method: 'PATCH',
+        body: { userId, campaignId },
       }),
     }),
   }),

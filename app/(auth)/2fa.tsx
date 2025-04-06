@@ -10,7 +10,7 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setAuthData } from '@/store/slices/auth.slice';
+import { setAuthData, userLogin } from '@/store/slices/auth.slice';
 
 interface TwoFaForm {
   otp: string;
@@ -87,8 +87,20 @@ const verifyCode = () => {
       if (response.success){
         console.log('OTP validated successfully!');
 
-        dispatch(setAuthData({ token: 'placeholderToRemove', success: true }));
+        const token = document.cookie.startsWith('access_token=') 
+        ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
+        : null;
+        // to clean up this code, use document.cookie to get the access_token to store in variable
+        console.log('Token from cookie:', token);
+        
+        if (!token) {
+          console.error('Token not found in cookies!');
+          return;
+        }
+        dispatch(userLogin({ token: token, data: response.data }));
+        dispatch(setAuthData({ token: token, success: true }));
         router.push('/');
+       // set expiry date to 1 hour in header, then call refreshToken as n when
       }
     }
     catch (err){

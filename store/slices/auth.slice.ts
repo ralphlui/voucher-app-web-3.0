@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Auth } from '@/types/Auth';
-import { RootState } from '@/store';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 
 interface WebSocketPayload {
@@ -11,7 +10,6 @@ interface WebSocketPayload {
     role: UserTypeEnum;
     username: string;
     authProvider: string;
-    token: string;
   };
 }
 
@@ -47,8 +45,6 @@ const authSlice = createSlice({
     userLogin: (
       state,
       action: PayloadAction<{token: string; data: WebSocketPayload['data'] }>) => {
-      // const token = getCookie('access_token');
-      // console.log('Token from cookie:', token); 
       const token = action.payload.token;
 
       if (token) {

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '@/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const coreApi = createApi({
   reducerPath: 'core',
@@ -7,12 +8,7 @@ const coreApi = createApi({
     baseUrl: process.env.EXPO_PUBLIC_CORE_API_URL,
     prepareHeaders: (headers, { getState }) => {
       const auth = getState() as RootState;
-      const userId = auth.auth.userId;
-      if (userId) {
-        headers.set('X-User-Id', userId);
-      } else {
-        headers.set('X-User-Id', 'anonymous');
-      }
+      headers.set('Authorization', `Bearer ${AsyncStorage.getItem('auth_token')}`);
       return headers;
     },
   }),

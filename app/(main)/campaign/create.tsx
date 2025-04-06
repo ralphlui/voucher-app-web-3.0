@@ -91,7 +91,7 @@ const CreateCampaign = () => {
                           ({
                             value: store.storeId,
                             label: store.storeName,
-                          }) ?? []
+                          }) 
                       ),
                     },
                     {

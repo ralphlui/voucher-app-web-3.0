@@ -24,7 +24,7 @@ const StoreTab = () => {
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetStoresByUserIdQuery(
       {
-        userId: auth.userId,
+        createdBy: auth.userId,
         page_size: pageSize,
         page_number: pageNumber,
       },
