@@ -16,6 +16,7 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 const CampaignTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -53,6 +54,8 @@ const CampaignTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Campaign>) => {
     return <CampaignCard campaign={item} />;
   };
+
+  refreshTokenBeforeExpire();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

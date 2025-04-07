@@ -16,6 +16,7 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 const VoucherTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -52,7 +53,8 @@ const VoucherTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Voucher>) => {
     return <VoucherCard voucher={item} />;
   };
-
+  refreshTokenBeforeExpire();
+  
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     setPageNumber(0);

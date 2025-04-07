@@ -16,6 +16,7 @@ import { useGetCampaignsQuery } from '@/services/campaign.service';
 import { Campaign } from '@/types/Campaign';
 import { Link } from 'expo-router';
 import { Searchbar } from 'react-native-paper';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 
 const CampaignTab = () => {
@@ -59,6 +60,8 @@ const CampaignTab = () => {
     await refetch();
     setRefreshing(false);
   }, [debouncedSearchQuery, refetch]);
+
+  refreshTokenBeforeExpire();
 
   return (
     <>

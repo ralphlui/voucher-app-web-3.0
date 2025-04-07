@@ -17,6 +17,7 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 const FeedTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -48,6 +49,8 @@ const FeedTab = () => {
     if (!hasNextPage || isLoading || isFetching) return;
     setPageNumber((pageNumber) => pageNumber + 1);
   }, [hasNextPage, isLoading, isFetching]);
+
+  refreshTokenBeforeExpire();
 
   const renderItem = ({ item }: ListRenderItemInfo<Feed>) => {
     return (

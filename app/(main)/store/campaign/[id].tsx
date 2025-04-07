@@ -12,6 +12,7 @@ import { useGetStoreByIdQuery } from '@/services/store.service';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import HandleResponse from '@/components/common/HandleResponse';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 const CampaigsForStore = () => {
   const { id } = useLocalSearchParams();
@@ -63,6 +64,8 @@ const CampaigsForStore = () => {
     await refetch();
     setRefreshing(false);
   }, [refetch]);
+
+  refreshTokenBeforeExpire();
 
   return (
     <>

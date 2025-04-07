@@ -10,6 +10,7 @@ import { useCreateStoreMutation } from '@/services/store.service';
 import useAuth from '@/hooks/useAuth';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import ImageUploadInput from '@/components/inputs/ImageUploadInput';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 type StoreForm = {
   storeName?: string;
@@ -54,6 +55,8 @@ const CreateStore = () => {
   });
 
   const [createStore, { data, isSuccess, isError, isLoading, error }] = useCreateStoreMutation();
+  refreshTokenBeforeExpire();
+  
   const onSuccess = () => {
     router.push('/store');
   };

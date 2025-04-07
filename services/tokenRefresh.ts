@@ -4,14 +4,10 @@ import { setAuthData } from '@/store/slices/auth.slice';
 
 const [refreshToken] = useRefreshTokenMutation();
 
-// Function to check if the token is expired (to fix tmr)
+// Function to check if the token is expired
 const isTokenExpired = (expiryTime: string | null) => {
-  const currentTime = Date.now();
-  if (!expiryTime) {
-    return true;
-  }
-  const expiryTimeInMillis = parseInt(expiryTime, 10); 
-  return currentTime >= expiryTimeInMillis - (2 * 60 * 1000); // Expiry time in milliseconds
+  if (!expiryTime) return true;
+  return Date.now() >= parseInt(expiryTime, 10) - (2 * 60 * 1000); // Expiry time in milliseconds
 };
 
 // Function to retrieve the access token and expiry time from storage or cookies

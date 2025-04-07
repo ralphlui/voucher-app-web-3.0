@@ -6,8 +6,8 @@ const feedApi = createApi({
   reducerPath: 'feed',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_FEED_API_URL,
-    prepareHeaders: async (headers) => {
-      await refreshTokenBeforeExpire();
+    prepareHeaders: (headers) => {
+      // await refreshTokenBeforeExpire();
       headers.set('Authorization', `Bearer ${AsyncStorage.getItem('access_token')}`);
       return headers;
     },

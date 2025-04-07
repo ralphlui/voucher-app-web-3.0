@@ -6,8 +6,8 @@ const coreApi = createApi({
   reducerPath: 'core',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_CORE_API_URL,
-    prepareHeaders: async (headers) => {
-      await refreshTokenBeforeExpire();
+    prepareHeaders: (headers) => {
+      // await refreshTokenBeforeExpire();
       headers.set('Authorization', `Bearer ${AsyncStorage.getItem('access_token')}`);
       return headers;
     },

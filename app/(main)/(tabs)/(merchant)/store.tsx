@@ -15,6 +15,7 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 const StoreTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -49,6 +50,8 @@ const StoreTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Store>) => {
     return <StoreCard store={item} />;
   };
+
+  refreshTokenBeforeExpire();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
