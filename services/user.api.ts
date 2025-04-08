@@ -6,7 +6,6 @@ const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_AUTH_API_URL,
     prepareHeaders: (headers) => {
-      // await refreshTokenBeforeExpire();
       headers.set('Content-Type', 'application/json');
       return headers;
     },

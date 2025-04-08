@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Modal, Portal } from 'react-native-paper';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import useAuth from '@/hooks/useAuth';
 import { useGetCampaignsByStoreIdQuery } from '@/services/campaign.service';
 import usePagination from '@/hooks/usePagination';
 import { FlatList, ListRenderItemInfo, RefreshControl, StyleSheet } from 'react-native';
@@ -12,7 +11,6 @@ import { useGetStoreByIdQuery } from '@/services/store.service';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import HandleResponse from '@/components/common/HandleResponse';
-import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 
 const CampaigsForStore = () => {
   const { id } = useLocalSearchParams();
@@ -64,8 +62,6 @@ const CampaigsForStore = () => {
     await refetch();
     setRefreshing(false);
   }, [refetch]);
-
-  refreshTokenBeforeExpire();
 
   return (
     <>

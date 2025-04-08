@@ -90,6 +90,7 @@ const verifyCode = () => {
         const token = document.cookie.startsWith('access_token=') 
         ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
         : null;
+        // const token = "123456";
         console.log('Token from cookie:', token);
 
         if (!token) {

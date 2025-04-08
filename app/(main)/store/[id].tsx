@@ -1,7 +1,6 @@
 import HandleResponse from '@/components/common/HandleResponse';
 import useAuth from '@/hooks/useAuth';
 import { useGetStoreByIdQuery } from '@/services/store.service';
-import { refreshTokenBeforeExpire } from '@/services/tokenRefresh';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -14,8 +13,6 @@ const Store = () => {
   const { data, error, isLoading, isFetching, isSuccess, isError, refetch } = useGetStoreByIdQuery({
     id,
   });
-
-  refreshTokenBeforeExpire();
 
   return (
     <>

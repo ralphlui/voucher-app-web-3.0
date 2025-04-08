@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRefreshTokenMutation} from '@/services/user.service';
 import { setAuthData } from '@/store/slices/auth.slice';
 
-const [refreshToken] = useRefreshTokenMutation();
-
 // Function to check if the token is expired
 const isTokenExpired = (expiryTime: string | null) => {
   if (!expiryTime) return true;
@@ -25,38 +23,43 @@ const getTokenFromStorage = async () => {
   }
 };
 
-// Function to refresh the access token
-const refreshTokenBeforeExpire = async () => {
-  try {
-    const tokenData = await getTokenFromStorage();
-    if (!tokenData) {
-      console.error('No token data available for refresh');
-      return;
+const useTokenRefresh = () => {
+  const [refreshToken, { isLoading: tokenLoading, isSuccess: tokenSuccess, isError: tokenError }] = useRefreshTokenMutation(); 
+
+  // Function to refresh the access token
+  const refreshTokenBeforeExpire = async () => {
+    try {
+      const tokenData = await getTokenFromStorage();
+      if (!tokenData) {
+        console.error('No token data available for refresh');
+        return;
+      }
+      const { accessToken, expiryTime } = tokenData;
+      if (isTokenExpired(expiryTime)) {
+        const refreshResponse = await refreshToken({}).unwrap(); 
+
+        if (!refreshResponse.ok) {
+          throw new Error('Failed to refresh token');
+        }
+
+        console.log('Token refreshed successfully');
+
+        // Store the new access token and its expiry time
+        const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1];
+        if (accessToken) {
+          await AsyncStorage.setItem('access_token', accessToken);
+          const newExpiryTime = Date.now() + 60 * 60 * 1000; 
+          setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime});
+        }
+        else {
+          throw new Error('Access token not found in cookies');
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing token:', error);
     }
-    const { accessToken, expiryTime } = tokenData;
-    if (isTokenExpired(expiryTime)) {
-      const refreshResponse = await refreshToken({}).unwrap(); 
+  };
+  return { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError };
+}
 
-      if (!refreshResponse.ok) {
-        throw new Error('Failed to refresh token');
-      }
-
-      console.log('Token refreshed successfully');
-
-      // Store the new access token and its expiry time
-      const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1];
-      if (accessToken) {
-        await AsyncStorage.setItem('access_token', accessToken);
-        const newExpiryTime = Date.now() + 60 * 60 * 1000; 
-        setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime});
-      }
-      else {
-        throw new Error('Access token not found in cookies');
-      }
-    }
-  } catch (error) {
-    console.error('Error refreshing token:', error);
-  }
-};
-
-export { refreshTokenBeforeExpire };
+export default useTokenRefresh;
