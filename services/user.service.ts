@@ -42,7 +42,7 @@ export const userApiSlice = userApi.injectEndpoints({
     editUser: builder.mutation({
       query: ({ body }) => ({
         url: '/api/users',
-        method: 'PUT',
+        method: 'POST',
         body,
       }),
     }),
@@ -78,16 +78,22 @@ export const userApiSlice = userApi.injectEndpoints({
     }),
     googleLogin: builder.mutation({
       query: ({ body }) => ({
-        url: '/auth/google', // adjust this to match your backend endpoint
-        method: 'POST',
-        body,
+        url: 'http://localhost:8083/api/users/google/userinfo',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${body.token}`,
+        },
       }),
     }),
     googleRegister: builder.mutation({
       query: ({ body }) => ({
-        url: '/auth/google/',
-        method: 'POST',
-        body,
+        url: 'http://localhost:8083/api/users/google/userinfo',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${body.token}`,
+        },
       }),
     }),
   }),

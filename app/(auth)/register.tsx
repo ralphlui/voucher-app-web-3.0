@@ -10,6 +10,7 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateUserMutation, useGoogleRegisterMutation } from '@/services/user.service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -55,7 +56,7 @@ const Register = () => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
       console.log('=== Google Auth Success at Register ===');
-        console.log('ID Token:', id_token);
+      console.log('ID Token:', id_token);
       handleGoogleSignIn(id_token);
     }
   }, [response]);
@@ -63,14 +64,22 @@ const Register = () => {
   const handleGoogleSignIn = async (token: string) => {
     try {
       const result = await googleRegister({
-        body: { googleToken: token },
+        body: { token },
       }).unwrap();
-
-      if (result) {
-        router.push('/login');
+  
+      console.log('=== Google Register Response ===', result);
+  
+      if (result.success) {
+        console.log('Google auth successful, redirecting to role selection');
+        // Store the Google user info in AsyncStorage for use in role selection
+        await AsyncStorage.setItem('googleUserInfo', JSON.stringify(result.data));
+        // Redirect to role selection page
+        router.push('/(auth)/roleSelection');
+      } else {
+        console.error('Registration failed:', result.message);
       }
     } catch (error) {
-      console.error('Google sign in error:', error);
+      console.error('Google registration error:', error);
     }
   };
 

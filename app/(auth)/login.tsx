@@ -93,10 +93,15 @@ const Login = () => {
         })
           .unwrap()
           .then((data) => {
-            console.log('=== Backend Response ===');
-            console.log('Login success:', data);
-            dispatch(userLogin(data));
-            router.push('/');
+            if (data.success) {
+              console.log('=== Backend Response ===');
+              console.log('Login success:', data);
+              dispatch(userLogin(data));
+              router.push('/');
+            } else {
+              console.error('=== Backend Error ===');
+              console.error('Google login failed:', data.message);
+            }
           })
           .catch((error) => {
             console.error('=== Backend Error ===');
