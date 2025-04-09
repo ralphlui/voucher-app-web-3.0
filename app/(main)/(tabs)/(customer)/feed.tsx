@@ -17,6 +17,8 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 const FeedTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -24,6 +26,7 @@ const FeedTab = () => {
   const numColumns = useResponsiveColumns();
   const router = useRouter();
   const auth = useAuth();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetFeedByUserIdQuery(
       {
@@ -71,6 +74,15 @@ const FeedTab = () => {
       </View>
     );
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

@@ -15,12 +15,15 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import { useFocusEffect } from '@react-navigation/native';
+import useTokenRefresh from '@/services/tokenRefresh';
 
 const StoreTab = () => {
   const [refreshing, setRefreshing] = useState(false);
   const numColumns = useResponsiveColumns();
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetStoresByUserIdQuery(
       {
@@ -49,6 +52,15 @@ const StoreTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Store>) => {
     return <StoreCard store={item} />;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

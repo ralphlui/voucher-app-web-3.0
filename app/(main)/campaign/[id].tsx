@@ -5,8 +5,10 @@ import HandleResponse from '@/components/common/HandleResponse';
 import CampaignEditFieldModal from '@/components/modals/CampaignEditFieldModal';
 import useAuth from '@/hooks/useAuth';
 import { useGetCampaignByIdQuery } from '@/services/campaign.service';
+import useTokenRefresh from '@/services/tokenRefresh';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
+import { useFocusEffect } from '@react-navigation/native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, Alert, Platform } from 'react-native';
@@ -19,6 +21,7 @@ const Campaign = () => {
   const { data, error, isLoading, isFetching, isSuccess, isError, refetch } =
     useGetCampaignByIdQuery({ id });
   const [showPin, setShowPin] = useState<boolean>(false);
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [currentField, setCurrentField] = useState<{
@@ -38,6 +41,15 @@ const Campaign = () => {
       console.log(`Update ${currentField.key} to ${newValue}`);
     }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   return (
     <>

@@ -16,6 +16,8 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 const CampaignTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -24,6 +26,7 @@ const CampaignTab = () => {
   const debouncedSearchQuery = useDeferredValue(searchQuery);
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetCampaignsByUserIdQuery(
       {
@@ -53,6 +56,15 @@ const CampaignTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Campaign>) => {
     return <CampaignCard campaign={item} />;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

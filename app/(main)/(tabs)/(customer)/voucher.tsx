@@ -19,7 +19,6 @@ import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
 import { useFocusEffect } from '@react-navigation/native';
 
-
 const VoucherTab = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [campaignStatus, setCampaignStatus] = useState('CLAIMED');
@@ -60,7 +59,7 @@ const VoucherTab = () => {
   useFocusEffect(
     React.useCallback(() => {
       const checkAndRefreshToken = async () => {
-          await refreshTokenBeforeExpire();
+        await refreshTokenBeforeExpire();
       };
       checkAndRefreshToken();
     }, [refreshTokenBeforeExpire])

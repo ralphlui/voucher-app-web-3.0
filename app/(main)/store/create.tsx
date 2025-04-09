@@ -9,6 +9,8 @@ import { useCreateStoreMutation } from '@/services/store.service';
 import useAuth from '@/hooks/useAuth';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import ImageUploadInput from '@/components/inputs/ImageUploadInput';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 type StoreForm = {
   storeName?: string;
@@ -27,6 +29,7 @@ const getImageBlob = async (imageUri: string) => {
   const blob = await response.blob();
   return blob;
 };
+const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
 
 const CreateStore = () => {
   const router = useRouter();
@@ -54,6 +57,15 @@ const CreateStore = () => {
 
   const [createStore, { data, isSuccess, isError, isLoading, error }] = useCreateStoreMutation();
   
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
+
   const onSuccess = () => {
     router.push('/store');
   };
