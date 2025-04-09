@@ -1,11 +1,18 @@
 import feedApi from '@/services/feed.api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const feedApiSlice = feedApi.injectEndpoints({
   endpoints: (builder) => ({
     getFeedByUserId: builder.query({
       query: ({ userId, page_size = 5, page_number = 0 }) => ({
-        url: `/api/feeds/users/${userId}?page=${page_number}&size=${page_size}`,
-        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
+        },
+        url: `/api/feeds/users`,
+        method: 'POST',
+        body: { userId },
+        params: { page_size, page_number },
       }),
       providesTags: ['Feed'],
       serializeQueryArgs: ({ endpointName }) => {
@@ -22,26 +29,29 @@ export const feedApiSlice = feedApi.injectEndpoints({
         return currentArg !== previousArg;
       },
     }),
-    getFeedById: builder.query({
-      query: (id: string) => ({
+    getFeedById: builder.mutation({
+      query: ({body}) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
         },
-        url: `/api/feeds/${id}`,
-        method: 'GET',
+        url: `/api/feeds/id`,
+        method: 'POST',
+        body,
       }),
     }),
     updateReadStatus: builder.mutation({
-      query: (id: string) => ({
+      query: ({feedId}) => ({
         headers: {
           'Content-Type': 'application/json',
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
         },
-        url: `/api/feeds/${id}/readStatus`,
+        url: `/api/feeds/readStatus`,
         method: 'PATCH',
+        body: {feedId}
       }),
     }),
   }),
 });
 
-export const { useGetFeedByUserIdQuery, useGetFeedByIdQuery, useUpdateReadStatusMutation } =
-  feedApiSlice;
+export const { useGetFeedByUserIdQuery, useGetFeedByIdMutation, useUpdateReadStatusMutation } = feedApiSlice;

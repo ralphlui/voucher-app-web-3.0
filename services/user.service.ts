@@ -1,4 +1,5 @@
 import userApi from '@/services/user.api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const userApiSlice = userApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -34,6 +35,10 @@ export const userApiSlice = userApi.injectEndpoints({
 
     getUsers: builder.query({
       query: ({ page }) => ({
+        headers: {
+          'Content-Type': 'application/json', 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+        },
         url: `/api/user?page=${page}`,
         method: 'GET',
       }),
@@ -41,6 +46,10 @@ export const userApiSlice = userApi.injectEndpoints({
 
     editUser: builder.mutation({
       query: ({ body }) => ({
+        headers: {
+          'Content-Type': 'application/json', 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+        },
         url: '/api/users',
         method: 'PUT',
         body,
@@ -72,10 +81,14 @@ export const userApiSlice = userApi.injectEndpoints({
 
     verifyToken: builder.mutation({
       query: () => ({
+        headers: {
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+        },
         url: '/api/users/validateToken',
         method: 'POST',
       }),
     }),
+
     googleLogin: builder.mutation({
       query: ({ body }) => ({
         url: '/auth/google', // adjust this to match your backend endpoint
@@ -83,6 +96,7 @@ export const userApiSlice = userApi.injectEndpoints({
         body,
       }),
     }),
+
     googleRegister: builder.mutation({
       query: ({ body }) => ({
         url: '/auth/google/',

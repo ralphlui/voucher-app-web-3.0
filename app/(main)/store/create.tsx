@@ -4,12 +4,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { ScrollView, View, StyleSheet, Alert, Platform } from 'react-native';
 import { ActivityIndicator, Avatar, Button, TextInput } from 'react-native-paper';
 import { FormBuilder } from 'react-native-paper-form-builder';
-
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateStoreMutation } from '@/services/store.service';
 import useAuth from '@/hooks/useAuth';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import ImageUploadInput from '@/components/inputs/ImageUploadInput';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 type StoreForm = {
   storeName?: string;
@@ -28,6 +29,7 @@ const getImageBlob = async (imageUri: string) => {
   const blob = await response.blob();
   return blob;
 };
+const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
 
 const CreateStore = () => {
   const router = useRouter();
@@ -54,6 +56,16 @@ const CreateStore = () => {
   });
 
   const [createStore, { data, isSuccess, isError, isLoading, error }] = useCreateStoreMutation();
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
+
   const onSuccess = () => {
     router.push('/store');
   };

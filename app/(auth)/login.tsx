@@ -126,7 +126,7 @@ const Login = () => {
   };
 
   const onSuccess = () => {
-    if (data) {
+    if (data){
       dispatch(userLogin(data));
       router.push('/(auth)/2fa');
     }

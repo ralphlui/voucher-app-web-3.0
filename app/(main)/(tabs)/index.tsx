@@ -14,8 +14,9 @@ import usePagination from '@/hooks/usePagination';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { useGetCampaignsQuery } from '@/services/campaign.service';
 import { Campaign } from '@/types/Campaign';
-import { Link } from 'expo-router';
 import { Searchbar } from 'react-native-paper';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const CampaignTab = () => {
@@ -24,6 +25,7 @@ const CampaignTab = () => {
   const numColumns = useResponsiveColumns();
   const debouncedSearchQuery = useDeferredValue(searchQuery);
   const { pageNumber, setPageNumber, pageSize } = usePagination();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetCampaignsQuery(
       {
@@ -52,6 +54,15 @@ const CampaignTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Campaign>) => {
     return <CampaignCard campaign={item} />;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
