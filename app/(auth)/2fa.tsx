@@ -10,7 +10,7 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setAuthData } from '@/store/slices/auth.slice';
+import { setAuthData, userLogin } from '@/store/slices/auth.slice';
 
 interface TwoFaForm {
   otp: string;
@@ -51,7 +51,7 @@ const verifyCode = () => {
   //       success: false,
   //     })
   //   );
-  //   const token = await AsyncStorage.getItem('auth_token');
+  //   const token = await AsyncStorage.getItem('access_token');
   //   if (token) {
   //     dispatch(
   //       setAuthData({
@@ -87,7 +87,18 @@ const verifyCode = () => {
       if (response.success){
         console.log('OTP validated successfully!');
 
-        dispatch(setAuthData({ token: 'placeholderToRemove', success: true }));
+        const token = document.cookie.startsWith('access_token=') 
+        ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
+        : null;
+        // const token = "123456";
+        console.log('Token from cookie:', token);
+
+        if (!token) {
+          console.error('Token not found in cookies!');
+          return;
+        }
+        dispatch(userLogin({ token: token, data: response.data }));
+        dispatch(setAuthData({ token: token, success: true, expiryTime: Date.now() + 60 * 60 * 1000 }));
         router.push('/');
       }
     }

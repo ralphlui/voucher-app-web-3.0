@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   ActivityIndicator,
@@ -16,6 +16,8 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 const VoucherTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -23,6 +25,7 @@ const VoucherTab = () => {
   const numColumns = useResponsiveColumns();
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetVouchersByUserIdQuery(
       {
@@ -52,7 +55,16 @@ const VoucherTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Voucher>) => {
     return <VoucherCard voucher={item} />;
   };
-
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+        await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
+  
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     setPageNumber(0);

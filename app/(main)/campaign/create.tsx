@@ -14,10 +14,13 @@ import DateTimePickerInput from '@/components/inputs/DateTimePickerInput';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import CreateStoreButton from '@/components/buttons/CreateStoreButton';
 import { categories } from '@/utils/categories';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 const CreateCampaign = () => {
   const router = useRouter();
   const auth = useAuth();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const {
     formState: { errors },
     control,
@@ -44,6 +47,15 @@ const CreateCampaign = () => {
     error: storeError,
     isLoading: storeIsLoading,
   } = useGetStoresByUserIdForStoreCreationQuery({ userId: auth.userId });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   const onSuccess = () => {
     router.push('/(main)/(tabs)');
@@ -91,7 +103,7 @@ const CreateCampaign = () => {
                           ({
                             value: store.storeId,
                             label: store.storeName,
-                          }) ?? []
+                          }) 
                       ),
                     },
                     {

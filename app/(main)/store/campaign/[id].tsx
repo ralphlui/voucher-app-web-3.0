@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Modal, Portal } from 'react-native-paper';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import useAuth from '@/hooks/useAuth';
 import { useGetCampaignsByStoreIdQuery } from '@/services/campaign.service';
 import usePagination from '@/hooks/usePagination';
 import { FlatList, ListRenderItemInfo, RefreshControl, StyleSheet } from 'react-native';
@@ -12,12 +11,15 @@ import { useGetStoreByIdQuery } from '@/services/store.service';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import HandleResponse from '@/components/common/HandleResponse';
+import useTokenRefresh from '@/services/tokenRefresh';
+import { useFocusEffect } from '@react-navigation/native';
 
 const CampaigsForStore = () => {
   const { id } = useLocalSearchParams();
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const numColumns = useResponsiveColumns();
   const [refreshing, setRefreshing] = useState(false);
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
   const { data, error, isLoading, hasNextPage, isFetching, isSuccess, isError, refetch } =
     useGetCampaignsByStoreIdQuery(
       {
@@ -56,6 +58,15 @@ const CampaigsForStore = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Campaign>) => {
     return <CampaignCard campaign={item} />;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAndRefreshToken = async () => {
+          await refreshTokenBeforeExpire();
+      };
+      checkAndRefreshToken();
+    }, [refreshTokenBeforeExpire])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

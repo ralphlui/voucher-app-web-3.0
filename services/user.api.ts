@@ -5,14 +5,7 @@ const userApi = createApi({
   reducerPath: 'user',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_AUTH_API_URL,
-    prepareHeaders: (headers, { getState }) => {
-      const auth = getState() as RootState;
-      const userId = auth.auth.userId;
-      if (userId) {
-        headers.set('X-User-Id', userId);
-      } else {
-        headers.set('X-User-Id', 'anonymous');
-      }
+    prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json');
       return headers;
     },

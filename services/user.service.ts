@@ -1,4 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import userApi from '@/services/user.api';
+
 
 export const userApiSlice = userApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -34,6 +37,10 @@ export const userApiSlice = userApi.injectEndpoints({
 
     getUsers: builder.query({
       query: ({ page }) => ({
+        headers: {
+          'Content-Type': 'application/json', 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+        },
         url: `/api/user?page=${page}`,
         method: 'GET',
       }),
@@ -41,6 +48,10 @@ export const userApiSlice = userApi.injectEndpoints({
 
     editUser: builder.mutation({
       query: ({ body }) => ({
+        headers: {
+          'Content-Type': 'application/json', 
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+        },
         url: '/api/users',
         method: 'POST',
         body,
@@ -72,13 +83,17 @@ export const userApiSlice = userApi.injectEndpoints({
 
     verifyToken: builder.mutation({
       query: () => ({
+        headers: {
+          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+        },
         url: '/api/users/validateToken',
         method: 'POST',
       }),
     }),
+
     googleLogin: builder.mutation({
       query: ({ body }) => ({
-        url: 'http://localhost:8083/api/users/google/userinfo',
+        url: '/api/users/google/userinfo',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -86,9 +101,10 @@ export const userApiSlice = userApi.injectEndpoints({
         },
       }),
     }),
+
     googleRegister: builder.mutation({
       query: ({ body }) => ({
-        url: 'http://localhost:8083/api/users/google/userinfo',
+        url: '/api/users/google/userinfo',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
