@@ -52,17 +52,14 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-     responseType: 'id_token',
-     redirectUri: Platform.select({
-      web:
-        typeof window !== 'undefined'
-          ? window.location.origin
-          : process.env.EXPO_PUBLIC_REDIRECT_URI,
-       default: makeRedirectUri({
-         native: 'voucher-app://',
-       }),
-     }),
-     scopes: ['profile', 'email'],
+    responseType: 'id_token',
+    redirectUri: Platform.select({
+      web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+      default: makeRedirectUri({
+        native: 'voucher-app://',
+      }),
+    }),
+    scopes: ['profile', 'email'],
   });
 
   useEffect(() => {
@@ -71,7 +68,7 @@ const Login = () => {
     console.log(
       'Redirect URI:',
       Platform.select({
-        web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+        web: process.env.EXPO_PUBLIC_REDIRECT_URI,
         default: makeRedirectUri({
           native: 'voucher-app://',
         }),
@@ -134,7 +131,7 @@ const Login = () => {
   };
 
   const onSuccess = () => {
-    if (data){
+    if (data) {
       dispatch(userLogin(data));
       router.push('/(auth)/2fa');
     }
