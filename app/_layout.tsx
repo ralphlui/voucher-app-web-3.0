@@ -1,10 +1,10 @@
 import { Stack } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 import { Provider as StoreProvider } from 'react-redux';
 
-import { store } from '@/store';
-import Toast from 'react-native-toast-message';
 import FeedSnackbar from '@/components/snackbars/FeedSnackbar';
+import { store } from '@/store';
 
 export default function RootLayout() {
   return (
