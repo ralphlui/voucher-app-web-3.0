@@ -50,8 +50,8 @@ const Login = () => {
   );
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
-     webClientId: '815276630708-c7p3i5lo1bhm8r0lkg4qs00d49jocav8.apps.googleusercontent.com',
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
      responseType: 'id_token',
      redirectUri: Platform.select({
        web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
