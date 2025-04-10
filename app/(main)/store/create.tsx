@@ -10,7 +10,6 @@ import useAuth from '@/hooks/useAuth';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import ImageUploadInput from '@/components/inputs/ImageUploadInput';
 
-
 type StoreForm = {
   storeName?: string;
   description?: string;

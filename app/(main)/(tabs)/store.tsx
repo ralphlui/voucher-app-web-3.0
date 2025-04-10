@@ -54,14 +54,14 @@ const StoreTab = () => {
     return <StoreCard store={item} />;
   };
   
-  useFocusEffect(
-    React.useCallback(() => {
-      const checkAndRefreshToken = async () => {
-          await refreshTokenBeforeExpire();
-      };
-      checkAndRefreshToken();
-    }, [refreshTokenBeforeExpire])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const checkAndRefreshToken = async () => {
+  //         await refreshTokenBeforeExpire();
+  //     };
+  //     checkAndRefreshToken();
+  //   }, [refreshTokenBeforeExpire])
+  // );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
