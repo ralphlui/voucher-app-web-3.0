@@ -44,7 +44,10 @@ const Register = () => {
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     responseType: 'id_token',
     redirectUri: Platform.select({
-      web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+      web:
+        typeof window !== 'undefined'
+          ? window.location.origin
+          : process.env.EXPO_PUBLIC_REDIRECT_URI,
       default: makeRedirectUri({
         native: 'voucher-app://',
       }),
@@ -66,9 +69,9 @@ const Register = () => {
       const result = await googleRegister({
         body: { token },
       }).unwrap();
-  
+
       console.log('=== Google Register Response ===', result);
-  
+
       if (result.success) {
         console.log('Google auth successful, redirecting to role selection');
         // Store the Google user info in AsyncStorage for use in role selection
