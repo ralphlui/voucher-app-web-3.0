@@ -48,14 +48,14 @@ const CreateCampaign = () => {
     isLoading: storeIsLoading,
   } = useGetStoresByUserIdForStoreCreationQuery({ userId: auth.userId });
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const checkAndRefreshToken = async () => {
-          await refreshTokenBeforeExpire();
-      };
-      checkAndRefreshToken();
-    }, [refreshTokenBeforeExpire])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const checkAndRefreshToken = async () => {
+  //         await refreshTokenBeforeExpire();
+  //     };
+  //     checkAndRefreshToken();
+  //   }, [refreshTokenBeforeExpire])
+  // );
 
   const onSuccess = () => {
     router.push('/(main)/(tabs)');

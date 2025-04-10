@@ -42,14 +42,14 @@ const Campaign = () => {
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const checkAndRefreshToken = async () => {
-          await refreshTokenBeforeExpire();
-      };
-      checkAndRefreshToken();
-    }, [refreshTokenBeforeExpire])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const checkAndRefreshToken = async () => {
+  //         await refreshTokenBeforeExpire();
+  //     };
+  //     checkAndRefreshToken();
+  //   }, [refreshTokenBeforeExpire])
+  // );
 
   return (
     <>
