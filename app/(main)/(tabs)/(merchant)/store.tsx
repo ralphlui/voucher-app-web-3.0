@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   ActivityIndicator,
@@ -15,7 +15,6 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
-import { useFocusEffect } from '@react-navigation/native';
 import useTokenRefresh from '@/services/tokenRefresh';
 
 const StoreTab = () => {
@@ -53,14 +52,9 @@ const StoreTab = () => {
     return <StoreCard store={item} />;
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //         await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

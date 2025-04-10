@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { ScrollView, View, StyleSheet, Alert, Platform } from 'react-native';
 import { ActivityIndicator, Avatar, Button, TextInput } from 'react-native-paper';
 import { FormBuilder } from 'react-native-paper-form-builder';
@@ -27,7 +27,6 @@ const getImageBlob = async (imageUri: string) => {
   const blob = await response.blob();
   return blob;
 };
-// const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
 
 const CreateStore = () => {
   const router = useRouter();
@@ -54,15 +53,6 @@ const CreateStore = () => {
   });
 
   const [createStore, { data, isSuccess, isError, isLoading, error }] = useCreateStoreMutation();
-  
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //         await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
 
   const onSuccess = () => {
     router.push('/store');

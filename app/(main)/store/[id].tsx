@@ -3,11 +3,10 @@ import useAuth from '@/hooks/useAuth';
 import { useGetStoreByIdQuery } from '@/services/store.service';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, View, StyleSheet, Platform } from 'react-native';
 import { ActivityIndicator, Button, Card, Text } from 'react-native-paper';
 import useTokenRefresh from '@/services/tokenRefresh';
-import { useFocusEffect } from '@react-navigation/native';
 
 const Store = () => {
   const { id } = useLocalSearchParams();
@@ -17,14 +16,9 @@ const Store = () => {
     id,
   });
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const checkAndRefreshToken = async () => {
-        await refreshTokenBeforeExpire();
-      };
-      checkAndRefreshToken();
-    }, [refreshTokenBeforeExpire])
-  );
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
 
   return (
     <>

@@ -8,10 +8,9 @@ import { useGetCampaignByIdQuery } from '@/services/campaign.service';
 import useTokenRefresh from '@/services/tokenRefresh';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
-import { useFocusEffect } from '@react-navigation/native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, Alert, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ScrollView, Image, Platform } from 'react-native';
 import { Button, Text, ActivityIndicator, Card, ProgressBar, TextInput } from 'react-native-paper';
 
 const Campaign = () => {
@@ -42,15 +41,11 @@ const Campaign = () => {
     }
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //         await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
-
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+    console.log('Token refreshed successfully');
+  }, []);
+  
   return (
     <>
       <Stack.Screen options={{ title: data?.data?.description ?? 'Loading...' }} />
