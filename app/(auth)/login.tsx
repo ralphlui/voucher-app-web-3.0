@@ -54,7 +54,10 @@ const Login = () => {
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
      responseType: 'id_token',
      redirectUri: Platform.select({
-       web: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081',
+      web:
+        typeof window !== 'undefined'
+          ? window.location.origin
+          : process.env.EXPO_PUBLIC_REDIRECT_URI,
        default: makeRedirectUri({
          native: 'voucher-app://',
        }),

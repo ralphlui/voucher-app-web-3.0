@@ -50,7 +50,7 @@ export const userApiSlice = userApi.injectEndpoints({
       query: ({ body }) => ({
         headers: {
           'Content-Type': 'application/json', 
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
+          Authorization: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: '/api/users',
         method: 'PUT',
