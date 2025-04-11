@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import userApi from '@/services/user.api';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
-import { FetchBaseQueryError, QueryReturnValue } from '@reduxjs/toolkit/query';
 
 interface GoogleAuthResponse {
   success: boolean;
@@ -90,61 +89,6 @@ export const userApiSlice = userApi.injectEndpoints({
         return response;
       },
     }),
-
-    // updateUserRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
-    //   query: (body) => {
-    //     const token = AsyncStorage.getItem('access_token');
-    //     console.log('=== Debug Token ===');
-    //     console.log('Access Token at updateUserRole api b4 call :', token);
-    //     console.log('==================');
-
-    //     return {
-    //       url: '/api/users/roles',
-    //       method: 'PUT',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${token}`,
-    //         'Access-Control-Allow-Credentials': 'true',
-    //       },
-    //       body: {
-    //         userId: body.userId,
-    //         role: body.role,
-    //       },
-    //       credentials: 'include',
-    //     };
-    //   },
-    //   transformErrorResponse: (response) => {
-    //     console.error('Update Role Error:', response);
-    //     return response;
-    //   },
-    // }),
-
-    // updateUserRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
-    //   query: (body) => ({
-    //     url: '/api/users/roles',
-    //     method: 'PUT',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${AsyncStorage.getItem('access_token')}`,
-    //       'Access-Control-Allow-Credentials': 'true',
-    //     },
-    //     body: {
-    //       userId: body.userId,
-    //       role: body.role,
-    //     },
-    //     credentials: 'include',
-    //   }),
-    //   // Add transform response to handle errors
-    //   transformErrorResponse: (response) => {
-    //     console.error('=== Update Role Error ===', response);
-    //     return response;
-    //   },
-    //   // Add transform response to handle success
-    //   transformResponse: (response: UpdateRoleResponse) => {
-    //     console.log('=== Update Role Success ===', response);
-    //     return response;
-    //   },
-    // }),
 
     editUser: builder.mutation({
       query: ({ body }) => ({

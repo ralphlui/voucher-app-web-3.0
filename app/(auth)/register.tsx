@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { Stack, useRouter } from 'expo-router';
@@ -7,12 +8,11 @@ import { useForm } from 'react-hook-form';
 import { StyleSheet, View, ScrollView, Platform, Text } from 'react-native';
 import { Button, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
 import { FormBuilder } from 'react-native-paper-form-builder';
+import { useDispatch } from 'react-redux';
 
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateUserMutation, useGoogleRegisterMutation } from '@/services/user.service';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userLogin } from '@/store/slices/auth.slice';
-import { useDispatch } from 'react-redux';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -21,12 +21,7 @@ const Register = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const {
-    formState: { errors },
-    control,
-    setFocus,
-    handleSubmit,
-  } = useForm({
+  const { control, setFocus, handleSubmit } = useForm({
     defaultValues: {
       username: '',
       email: '',
@@ -46,6 +41,7 @@ const Register = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    useProxy: true,
     // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
@@ -59,7 +55,7 @@ const Register = () => {
   });
 
   useEffect(() => {
-    console.log('=== Google Auth Configuration ===');
+    console.log('=== Google Auth Configuration at Register ===');
     console.log(
       'Redirect URI at Google Auth -> Register:',
       Platform.select({
