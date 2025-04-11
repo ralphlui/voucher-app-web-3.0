@@ -87,14 +87,15 @@ const verifyCode = () => {
       if (response.success){
         console.log('OTP validated successfully!');
 
-        // const token = document.cookie.startsWith('access_token=') 
-        // ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
-        // : null;
-        const token = "123456";
+        const token = document.cookie.startsWith('access_token=') 
+        ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
+        : null;
+        // const token = "123456";
         console.log('Token from cookie:', token);
 
         if (!token) {
           console.error('Token not found in cookies!');
+          return;
         }
         dispatch(userLogin({ token: token, data: response.data }));
         dispatch(setAuthData({ token: token, success: true, expiryTime: Date.now() + 60 * 60 * 1000 }));
