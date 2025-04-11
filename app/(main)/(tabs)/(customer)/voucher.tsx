@@ -11,13 +11,12 @@ import VoucherCard from '@/components/cards/VoucherCard';
 import usePagination from '@/hooks/usePagination';
 import { useGetVouchersByUserIdQuery } from '@/services/voucher.service';
 import { Voucher } from '@/types/Voucher';
-import { Button, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
+import { SegmentedButtons } from 'react-native-paper';
 import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
-import { useFocusEffect } from '@react-navigation/native';
 
 const VoucherTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -55,16 +54,11 @@ const VoucherTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Voucher>) => {
     return <VoucherCard voucher={item} />;
   };
-  
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //       await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
-  
+
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     setPageNumber(0);

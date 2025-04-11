@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -18,7 +18,6 @@ import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
-import { useFocusEffect } from '@react-navigation/native';
 
 const FeedTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -75,14 +74,9 @@ const FeedTab = () => {
     );
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //         await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
