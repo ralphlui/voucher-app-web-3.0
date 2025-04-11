@@ -1,52 +1,73 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, RadioButton, Text } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 
-import { useEditUserMutation } from '@/services/user.service';
+import { useUpdateUserRoleMutation } from '@/services/user.service';
+import { UserTypeEnum } from '@/types/UserTypeEnum';
 
 export default function RoleSelection() {
   const [role, setRole] = useState('');
   const router = useRouter();
-  const [editUser] = useEditUserMutation();
+  const dispatch = useDispatch();
+  const [updateUserRole] = useUpdateUserRoleMutation();
+
+  useEffect(() => {
+    // Check if we have the necessary user data on mount
+    const checkUserData = async () => {
+      const userData = await AsyncStorage.getItem('user');
+      console.log('User data in role selection:', userData);
+    };
+    checkUserData();
+  }, []);
 
   const handleSubmit = async () => {
     try {
+      console.log('Submitting role:', role);
       // Get the stored Google user info
-      const userInfoString = await AsyncStorage.getItem('googleUserInfo');
+      const userInfoString = await AsyncStorage.getItem('user');
+      const accessToken = await AsyncStorage.getItem('access_token');
       if (!userInfoString) {
-        console.error('No user info found');
+        console.error('No user data found in AsyncStorage');
+        return;
+      }
+
+      if (!accessToken) {
+        console.error('No access token found');
         return;
       }
 
       const userInfo = JSON.parse(userInfoString);
+      console.log('Current user data:', userInfo);
+      console.log('Access token at role selection page :', accessToken);
 
       // Update user with selected role
-      const result = await editUser({
-        body: {
-          email: userInfo.email,
-          username: userInfo.name,
-          role,
-          googleId: userInfo.id,
-          active: true,
-          preferences: [], // Add any default preferences if needed
-        },
+      const result = await updateUserRole({
+        userId: userInfo.userID,
+        role: role as UserTypeEnum,
       }).unwrap();
+      // const result = await updateUserRole({
+      //   body: {
+      //     userID: userInfo.userID,
+      //     email: userInfo.email,
+      //     username: userInfo.username,
+      //     role: role as UserTypeEnum,
+      //     authProvider: userInfo.authProvider,
+      //     active: true,
+      //     token: accessToken,
+      //   },
+      // }).unwrap();
 
-      console.log('=== User Update Response ===', result);
+      console.log('==== Role update response ==== : ', result);
 
       if (result.success) {
-        // Store user role
-        await AsyncStorage.setItem('userRole', role);
+        // Update stored user data with new role
+        const updatedUser = { ...userInfo, role };
+        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
 
-        // Store complete user data if needed
-        await AsyncStorage.setItem('userData', JSON.stringify(result.data));
-
-        // Clean up Google info
-        await AsyncStorage.removeItem('googleUserInfo');
-
-        // Redirect to home page - the role check will happen there
+        console.log('Role updated successfully, navigating to home');
         router.push('/');
       } else {
         console.error('Role update failed:', result.message);

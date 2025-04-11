@@ -1,7 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import userApi from '@/services/user.api';
+import { UserTypeEnum } from '@/types/UserTypeEnum';
+import { FetchBaseQueryError, QueryReturnValue } from '@reduxjs/toolkit/query';
 
+interface GoogleAuthResponse {
+  success: boolean;
+  message: string;
+  totalRecord: number;
+  data: {
+    userID: string;
+    email: string;
+    username: string;
+    role: string;
+    authProvider: string;
+    verified: boolean;
+    active: boolean;
+  };
+}
+
+interface UpdateRoleRequest {
+  userId: string;
+  role: UserTypeEnum;
+}
+
+interface UpdateRoleResponse {
+  success: boolean;
+  message: string;
+  data: {
+    role: UserTypeEnum;
+  };
+}
 
 export const userApiSlice = userApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -38,7 +67,7 @@ export const userApiSlice = userApi.injectEndpoints({
     getUsers: builder.query({
       query: ({ page }) => ({
         headers: {
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
           Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: `/api/user?page=${page}`,
@@ -46,10 +75,81 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
+    updateUserRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
+      query: (body) => ({
+        url: '/api/users/roles',
+        method: 'PUT',
+        body: {
+          userId: body.userId,
+          role: body.role,
+        },
+        credentials: 'include',
+      }),
+      transformErrorResponse: (response) => {
+        console.error('Update Role Error:', response);
+        return response;
+      },
+    }),
+
+    // updateUserRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
+    //   query: (body) => {
+    //     const token = AsyncStorage.getItem('access_token');
+    //     console.log('=== Debug Token ===');
+    //     console.log('Access Token at updateUserRole api b4 call :', token);
+    //     console.log('==================');
+
+    //     return {
+    //       url: '/api/users/roles',
+    //       method: 'PUT',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${token}`,
+    //         'Access-Control-Allow-Credentials': 'true',
+    //       },
+    //       body: {
+    //         userId: body.userId,
+    //         role: body.role,
+    //       },
+    //       credentials: 'include',
+    //     };
+    //   },
+    //   transformErrorResponse: (response) => {
+    //     console.error('Update Role Error:', response);
+    //     return response;
+    //   },
+    // }),
+
+    // updateUserRole: builder.mutation<UpdateRoleResponse, UpdateRoleRequest>({
+    //   query: (body) => ({
+    //     url: '/api/users/roles',
+    //     method: 'PUT',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${AsyncStorage.getItem('access_token')}`,
+    //       'Access-Control-Allow-Credentials': 'true',
+    //     },
+    //     body: {
+    //       userId: body.userId,
+    //       role: body.role,
+    //     },
+    //     credentials: 'include',
+    //   }),
+    //   // Add transform response to handle errors
+    //   transformErrorResponse: (response) => {
+    //     console.error('=== Update Role Error ===', response);
+    //     return response;
+    //   },
+    //   // Add transform response to handle success
+    //   transformResponse: (response: UpdateRoleResponse) => {
+    //     console.log('=== Update Role Success ===', response);
+    //     return response;
+    //   },
+    // }),
+
     editUser: builder.mutation({
       query: ({ body }) => ({
         headers: {
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${AsyncStorage.getItem('access_token')}`,
         },
         url: '/api/users',
@@ -102,16 +202,30 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
-    googleRegister: builder.mutation({
+    googleRegister: builder.mutation<GoogleAuthResponse, { body: { token: string } }>({
       query: ({ body }) => ({
         url: '/api/users/google/userinfo',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${body.token}`,
+          'Access-Control-Allow-Credentials': 'true',
         },
+        credentials: 'include', // This is important for receiving cookies
       }),
     }),
+
+    // googleRegister: builder.mutation({
+    //   query: ({ body }) => ({
+    //     url: '/api/users/google/userinfo',
+    //     method: 'GET',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${body.token}`,
+    //     },
+    //     credentials: 'include',
+    //   }),
+    // }),
   }),
 });
 
@@ -128,4 +242,5 @@ export const {
   useVerifyTokenMutation,
   useGoogleLoginMutation,
   useGoogleRegisterMutation,
+  useUpdateUserRoleMutation,
 } = userApiSlice;
