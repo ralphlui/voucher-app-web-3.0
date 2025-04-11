@@ -1,5 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { ScrollView, View, StyleSheet, Platform } from 'react-native';
 import { ActivityIndicator, Text, Button, TextInput, Avatar } from 'react-native-paper';
@@ -15,7 +15,6 @@ import { UserTypeEnum } from '@/types/UserTypeEnum';
 import CreateStoreButton from '@/components/buttons/CreateStoreButton';
 import { categories } from '@/utils/categories';
 import useTokenRefresh from '@/services/tokenRefresh';
-import { useFocusEffect } from '@react-navigation/native';
 
 const CreateCampaign = () => {
   const router = useRouter();
@@ -48,14 +47,9 @@ const CreateCampaign = () => {
     isLoading: storeIsLoading,
   } = useGetStoresByUserIdForStoreCreationQuery({ userId: auth.userId });
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //         await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
 
   const onSuccess = () => {
     router.push('/(main)/(tabs)');

@@ -1,4 +1,4 @@
-import React, { useCallback, useDeferredValue, useState } from 'react';
+import React, { useCallback, useDeferredValue, useEffect, useState } from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -17,7 +17,6 @@ import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
-import { useFocusEffect } from '@react-navigation/native';
 
 const CampaignTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -57,14 +56,9 @@ const CampaignTab = () => {
     return <CampaignCard campaign={item} />;
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkAndRefreshToken = async () => {
-  //         await refreshTokenBeforeExpire();
-  //     };
-  //     checkAndRefreshToken();
-  //   }, [refreshTokenBeforeExpire])
-  // );
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
