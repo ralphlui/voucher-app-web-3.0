@@ -11,11 +11,15 @@ import { FormBuilder } from 'react-native-paper-form-builder';
 import HandleResponse from '@/components/common/HandleResponse';
 import { useCreateUserMutation, useGoogleRegisterMutation } from '@/services/user.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { userLogin } from '@/store/slices/auth.slice';
+import { useDispatch } from 'react-redux';
+import { UserTypeEnum } from '@/types/UserTypeEnum';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const Register = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const {
     formState: { errors },
@@ -42,6 +46,8 @@ const Register = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
     redirectUri: Platform.select({
       web: process.env.EXPO_PUBLIC_REDIRECT_URI,
@@ -53,10 +59,20 @@ const Register = () => {
   });
 
   useEffect(() => {
+    console.log('=== Google Auth Configuration ===');
+    console.log(
+      'Redirect URI at Google Auth -> Register:',
+      Platform.select({
+        web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+        default: makeRedirectUri({
+          native: 'voucher-app://',
+        }),
+      })
+    );
     if (response?.type === 'success') {
       const { id_token } = response.params;
       console.log('=== Google Auth Success at Register ===');
-      console.log('ID Token:', id_token);
+      console.log('Google Auth ID Token:', id_token);
       handleGoogleSignIn(id_token);
     }
   }, [response]);
@@ -70,13 +86,47 @@ const Register = () => {
       console.log('=== Google Register Response ===', result);
 
       if (result.success) {
-        console.log('Google auth successful, redirecting to role selection');
-        // Store the Google user info in AsyncStorage for use in role selection
-        await AsyncStorage.setItem('googleUserInfo', JSON.stringify(result.data));
-        // Redirect to role selection page
-        router.push('/(auth)/roleSelection');
-      } else {
-        console.error('Registration failed:', result.message);
+        console.log('Google auth successful, try to redirect the role selection page.');
+        await AsyncStorage.setItem('user', JSON.stringify(result.data));
+        console.log('User data after Google registration:', result.data);
+        console.log('User ID after Google registration:', result.data.userID);
+        console.log('Checking the document cookie : ', document.cookie);
+
+        const cookies = document.cookie.split(';');
+        const accessToken = cookies
+          .find((cookie) => cookie.includes('access_token'))
+          ?.split('=')[1];
+        const refreshToken = cookies
+          .find((cookie) => cookie.includes('refresh_token'))
+          ?.split('=')[1];
+
+        console.log('Access Token after register for role selection page call :', accessToken);
+        console.log('Refresh Token after register for role selection page call :', refreshToken);
+
+        //if (accessToken && refreshToken) {
+        if (accessToken) {
+          await AsyncStorage.setItem('access_token', accessToken);
+          await AsyncStorage.setItem('refresh_token', accessToken);
+
+          await dispatch(
+            userLogin({
+              token: accessToken,
+              //refreshToken: refreshToken || null,
+              data: {
+                ...result.data,
+                role: result.data.role as UserTypeEnum,
+              },
+            })
+          );
+
+          if (result.data.role === UserTypeEnum.UNDEFINED) {
+            console.log('Navigating to role selection page...');
+            router.push('/(auth)/roleSelection');
+          } else {
+            console.log('Navigating to home page...');
+            router.push('/');
+          }
+        }
       }
     } catch (error) {
       console.error('Google registration error:', error);

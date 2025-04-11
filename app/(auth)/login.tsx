@@ -52,6 +52,8 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
     redirectUri: Platform.select({
       web: process.env.EXPO_PUBLIC_REDIRECT_URI,
@@ -66,7 +68,7 @@ const Login = () => {
     // Log redirect URI when component mounts
     console.log('=== Google Auth Configuration ===');
     console.log(
-      'Redirect URI:',
+      'Redirect URI at Google Auth -> Login:',
       Platform.select({
         web: process.env.EXPO_PUBLIC_REDIRECT_URI,
         default: makeRedirectUri({
@@ -76,7 +78,7 @@ const Login = () => {
     );
 
     if (response) {
-      console.log('=== Google Auth Response ===');
+      console.log('=== Google Auth Response at Login ===');
       console.log('Response type:', response.type);
       console.log('Full response:', response);
 

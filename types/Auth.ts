@@ -4,6 +4,7 @@ export interface Auth {
   user?: string | null;
   userId?: string | null;
   token?: string | null;
+  refreshToken: string | null;
   success?: boolean;
   error?: string | null;
   role?: UserTypeEnum | null;
