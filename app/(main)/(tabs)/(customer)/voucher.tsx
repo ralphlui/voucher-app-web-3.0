@@ -25,6 +25,10 @@ const VoucherTab = () => {
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    refreshTokenBeforeExpire();
+  }, []);
+
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetVouchersByUserIdQuery(
       {
@@ -54,10 +58,6 @@ const VoucherTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Voucher>) => {
     return <VoucherCard voucher={item} />;
   };
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

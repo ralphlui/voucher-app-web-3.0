@@ -98,7 +98,7 @@ const verifyCode = () => {
           return;
         }
         dispatch(userLogin({ token: token, data: response.data }));
-        dispatch(setAuthData({ token: token, success: true, expiryTime: Date.now() + 60 * 60 * 1000 }));
+        dispatch(setAuthData({ token: token, success: true, expiryTime: Date.now() + 15 * 60 * 1000 }));
         router.push('/');
       }
     }

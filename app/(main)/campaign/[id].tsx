@@ -17,10 +17,15 @@ const Campaign = () => {
   const { id } = useLocalSearchParams();
   const auth = useAuth();
   const router = useRouter();
-  const { data, error, isLoading, isFetching, isSuccess, isError, refetch } =
-    useGetCampaignByIdQuery({ id });
-  const [showPin, setShowPin] = useState<boolean>(false);
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
+
+  const { data, error, isLoading, isFetching, isSuccess, isError, refetch } = useGetCampaignByIdQuery({ id });
+  const [showPin, setShowPin] = useState<boolean>(false);
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [currentField, setCurrentField] = useState<{
@@ -40,11 +45,6 @@ const Campaign = () => {
       console.log(`Update ${currentField.key} to ${newValue}`);
     }
   };
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-    console.log('Token refreshed successfully');
-  }, []);
   
   return (
     <>

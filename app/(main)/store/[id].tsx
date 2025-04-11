@@ -12,13 +12,14 @@ const Store = () => {
   const { id } = useLocalSearchParams();
   const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
   const { data, error, isLoading, isFetching, isSuccess, isError, refetch } = useGetStoreByIdQuery({
     id,
   });
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   return (
     <>
