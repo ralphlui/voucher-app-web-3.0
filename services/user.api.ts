@@ -9,14 +9,14 @@ const userApi = createApi({
     prepareHeaders: async (headers) => {
       headers.set('Content-Type', 'application/json');
       headers.set('Access-Control-Allow-Credentials', 'true');
-      
+
       // Get and set the token
       const token = await AsyncStorage.getItem('access_token');
       if (token) {
         console.log('Setting token in headers:', token);
         headers.set('Authorization', `Bearer ${token}`);
       }
-      
+
       return headers;
     },
   }),
