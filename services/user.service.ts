@@ -146,30 +146,16 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
-    googleRegister: builder.mutation<GoogleAuthResponse, { body: { token: string } }>({
+    googleRegister: builder.mutation({
       query: ({ body }) => ({
         url: '/api/users/google/userinfo',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${body.token}`,
-          'Access-Control-Allow-Credentials': 'true',
         },
-        credentials: 'include', // This is important for receiving cookies
       }),
     }),
-
-    // googleRegister: builder.mutation({
-    //   query: ({ body }) => ({
-    //     url: '/api/users/google/userinfo',
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${body.token}`,
-    //     },
-    //     credentials: 'include',
-    //   }),
-    // }),
   }),
 });
 
