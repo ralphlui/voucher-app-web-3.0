@@ -2,6 +2,7 @@
   "expo": {
     "name": "voucher-app-web",
     "slug": "voucher-app-web",
+    "owner": "vochuerteam03",
     "version": "1.0.0",
 
     "scheme": "voucher-app-web",
