@@ -167,7 +167,6 @@ export const userApiSlice = userApi.injectEndpoints({
     //       'Content-Type': 'application/json',
     //       Authorization: `Bearer ${body.token}`,
     //     },
-    //     credentials: 'include',
     //   }),
     // }),
   }),
