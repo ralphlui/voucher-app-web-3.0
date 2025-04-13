@@ -26,6 +26,12 @@ const FeedTab = () => {
   const router = useRouter();
   const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
+
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetFeedByUserIdQuery(
       {
@@ -73,10 +79,6 @@ const FeedTab = () => {
       </View>
     );
   };
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

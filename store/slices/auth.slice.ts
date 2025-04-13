@@ -84,24 +84,6 @@ const authSlice = createSlice({
       state.userId = data.userID;
       state.authProvider = data.authProvider;
     },
-    // userLogin: (
-    //   state,
-    //   action: PayloadAction<{token: string; data: WebSocketPayload['data'] }>) => {
-    //   const token = action.payload.token;
-
-    //   if (token) {
-    //     AsyncStorage.setItem('access_token', token).catch((err) =>
-    //       console.error('Error storing token:', err)
-    //     );
-    //   }
-    //   state.token = token;
-    //   state.success = true;
-    //   state.email = action.payload.data.email;
-    //   state.role = action.payload.data.role;
-    //   state.user = action.payload.data.username;
-    //   state.userId = action.payload.data.userID;
-    //   state.authProvider = action.payload.data.authProvider;
-    // },
     setAuthData: (
       state,
       action: PayloadAction<{ token: string | null; success: boolean; expiryTime: number | null }>

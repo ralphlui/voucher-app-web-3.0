@@ -48,7 +48,7 @@ const useTokenRefresh = () => {
         const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1];
         if (accessToken) {
           await AsyncStorage.setItem('access_token', accessToken);
-          const newExpiryTime = Date.now() + 60 * 60 * 1000; 
+          const newExpiryTime = Date.now() + 15 * 60 * 1000; 
           setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime});
         }
         else {

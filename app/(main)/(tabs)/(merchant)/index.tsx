@@ -26,6 +26,12 @@ const CampaignTab = () => {
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
+
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetCampaignsByUserIdQuery(
       {
@@ -55,10 +61,6 @@ const CampaignTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Campaign>) => {
     return <CampaignCard campaign={item} />;
   };
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

@@ -16,6 +16,7 @@ import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
+import useAuth from '@/hooks/useAuth';
 
 const StoreTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -23,7 +24,14 @@ const StoreTab = () => {
   const numColumns = useResponsiveColumns();
   const debouncedSearchQuery = useDeferredValue(searchQuery);
   const { pageNumber, setPageNumber, pageSize } = usePagination();
+  const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
+  
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetStoresQuery(
       {
@@ -52,10 +60,6 @@ const StoreTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Store>) => {
     return <StoreCard store={item} />;
   };
-  
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

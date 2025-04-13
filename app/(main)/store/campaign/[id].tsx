@@ -12,13 +12,21 @@ import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
+import useAuth from '@/hooks/useAuth';
 
 const CampaigsForStore = () => {
   const { id } = useLocalSearchParams();
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const numColumns = useResponsiveColumns();
   const [refreshing, setRefreshing] = useState(false);
+  const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
+  
   const { data, error, isLoading, hasNextPage, isFetching, isSuccess, isError, refetch } =
     useGetCampaignsByStoreIdQuery(
       {
@@ -57,10 +65,6 @@ const CampaigsForStore = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Campaign>) => {
     return <CampaignCard campaign={item} />;
   };
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

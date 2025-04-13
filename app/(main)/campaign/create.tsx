@@ -20,6 +20,12 @@ const CreateCampaign = () => {
   const router = useRouter();
   const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
+
   const {
     formState: { errors },
     control,
@@ -46,10 +52,6 @@ const CreateCampaign = () => {
     error: storeError,
     isLoading: storeIsLoading,
   } = useGetStoresByUserIdForStoreCreationQuery({ userId: auth.userId });
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onSuccess = () => {
     router.push('/(main)/(tabs)');

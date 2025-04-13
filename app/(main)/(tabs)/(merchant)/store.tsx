@@ -23,6 +23,11 @@ const StoreTab = () => {
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+  useEffect(() => {
+    if(auth.user){
+      refreshTokenBeforeExpire();
+    }
+  }, []);
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetStoresByUserIdQuery(
       {
@@ -51,10 +56,6 @@ const StoreTab = () => {
   const renderItem = ({ item }: ListRenderItemInfo<Store>) => {
     return <StoreCard store={item} />;
   };
-
-  useEffect(() => {
-    refreshTokenBeforeExpire();
-  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
