@@ -16,7 +16,8 @@ import useAuth from '@/hooks/useAuth';
 import NoDataFound from '@/components/common/NoDataFound';
 import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import HandleResponse from '@/components/common/HandleResponse';
-import useTokenRefresh from '@/services/tokenRefresh';
+import useTokenRefresh from '@/services/tokenRefresh'; 
+import { useNavigation } from '@react-navigation/native';
 
 const CampaignTab = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -25,12 +26,15 @@ const CampaignTab = () => {
   const debouncedSearchQuery = useDeferredValue(searchQuery);
   const { pageNumber, setPageNumber, pageSize } = usePagination();
   const auth = useAuth();
+  const navigation = useNavigation();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+
   useEffect(() => {
-    if(auth.user){
+    const unsubscribe = navigation.addListener('focus', () => {
       refreshTokenBeforeExpire();
-    }
-  }, []);
+    });
+    return unsubscribe;
+  }, [navigation, refreshTokenBeforeExpire]);
 
   const { data, error, isLoading, isFetching, hasNextPage, isSuccess, isError, refetch } =
     useGetCampaignsByUserIdQuery(

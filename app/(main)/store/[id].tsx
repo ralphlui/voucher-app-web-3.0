@@ -7,16 +7,21 @@ import React, { useEffect } from 'react';
 import { ScrollView, View, StyleSheet, Platform } from 'react-native';
 import { ActivityIndicator, Button, Card, Text } from 'react-native-paper';
 import useTokenRefresh from '@/services/tokenRefresh';
+import { useNavigation } from '@react-navigation/native';
 
 const Store = () => {
   const { id } = useLocalSearchParams();
   const auth = useAuth();
+  const navigation = useNavigation();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+
   useEffect(() => {
-    if(auth.user){
+    const unsubscribe = navigation.addListener('focus', () => {
       refreshTokenBeforeExpire();
-    }
-  }, []);
+    });
+    return unsubscribe;
+  }, [navigation, refreshTokenBeforeExpire]);
+  
   const { data, error, isLoading, isFetching, isSuccess, isError, refetch } = useGetStoreByIdQuery({
     id,
   });

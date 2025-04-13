@@ -13,6 +13,7 @@ import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import HandleResponse from '@/components/common/HandleResponse';
 import useTokenRefresh from '@/services/tokenRefresh';
 import useAuth from '@/hooks/useAuth';
+import { useNavigation } from '@react-navigation/native';
 
 const CampaigsForStore = () => {
   const { id } = useLocalSearchParams();
@@ -20,12 +21,15 @@ const CampaigsForStore = () => {
   const numColumns = useResponsiveColumns();
   const [refreshing, setRefreshing] = useState(false);
   const auth = useAuth();
+  const navigation = useNavigation();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+
   useEffect(() => {
-    if(auth.user){
+    const unsubscribe = navigation.addListener('focus', () => {
       refreshTokenBeforeExpire();
-    }
-  }, []);
+    });
+    return unsubscribe;
+  }, [navigation, refreshTokenBeforeExpire]);
   
   const { data, error, isLoading, hasNextPage, isFetching, isSuccess, isError, refetch } =
     useGetCampaignsByStoreIdQuery(

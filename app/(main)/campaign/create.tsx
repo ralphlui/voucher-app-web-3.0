@@ -15,16 +15,20 @@ import { UserTypeEnum } from '@/types/UserTypeEnum';
 import CreateStoreButton from '@/components/buttons/CreateStoreButton';
 import { categories } from '@/utils/categories';
 import useTokenRefresh from '@/services/tokenRefresh';
+import { useNavigation } from '@react-navigation/native';
 
 const CreateCampaign = () => {
   const router = useRouter();
   const auth = useAuth();
+  const navigation = useNavigation();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+
   useEffect(() => {
-    if(auth.user){
+    const unsubscribe = navigation.addListener('focus', () => {
       refreshTokenBeforeExpire();
-    }
-  }, []);
+    });
+    return unsubscribe;
+  }, [navigation, refreshTokenBeforeExpire]);
 
   const {
     formState: { errors },
