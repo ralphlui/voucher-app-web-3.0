@@ -43,28 +43,12 @@ const Register = () => {
     router.push('/login');
   };
 
-  //----- v6
-  // const [request, response, promptAsync] = Google.useAuthRequest({
-  //   clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-  //   webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-  //   responseType: 'id_token',
-  //   redirectUri: Platform.select({
-  //     web: process.env.EXPO_PUBLIC_REDIRECT_URI,
-  //     default: makeRedirectUri({
-  //       native: 'voucher-app://',
-  //     }),
-  //   }),
-  //   scopes: ['profile', 'email'],
-  // });
-
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
     redirectUri: Platform.select({
-      web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+      web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
       default: makeRedirectUri({
         native: 'voucher-app://',
       }),
@@ -72,22 +56,26 @@ const Register = () => {
     scopes: ['profile', 'email'],
   });
 
-  //----- v6
-  // useEffect(() => {
-  //   if (response?.type === 'success') {
-  //     const { id_token } = response.params;
-  //     console.log('=== Google Auth Success at Register ===');
-  //     console.log('ID Token:', id_token);
-  //     handleGoogleSignIn(id_token);
-  //   }
-  // }, [response]);
+  // Add message listener for OAuth callback
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleMessage = (event: MessageEvent) => {
+        if (event.data.type === 'OAUTH_SUCCESS') {
+          handleGoogleSignIn(event.data.token);
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }
+  }, []);
 
   useEffect(() => {
     console.log('=== Google Auth Configuration at Register ===');
     console.log(
       'Redirect URI at Google Auth -> Register:',
       Platform.select({
-        web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+        web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
         default: makeRedirectUri({
           native: 'voucher-app://',
         }),
@@ -100,29 +88,6 @@ const Register = () => {
       handleGoogleSignIn(id_token);
     }
   }, [response]);
-
-  //----- v6
-  // const handleGoogleSignIn = async (token: string) => {
-  //   try {
-  //     const result = await googleRegister({
-  //       body: { token },
-  //     }).unwrap();
-
-  //     console.log('=== Google Register Response ===', result);
-
-  //     if (result.success) {
-  //       console.log('Google auth successful, redirecting to role selection');
-  //       // Store the Google user info in AsyncStorage for use in role selection
-  //       await AsyncStorage.setItem('googleUserInfo', JSON.stringify(result.data));
-  //       // Redirect to role selection page
-  //       router.push('/(auth)/roleSelection');
-  //     } else {
-  //       console.error('Registration failed:', result.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Google registration error:', error);
-  //   }
-  // };
 
   const handleGoogleSignIn = async (token: string) => {
     try {

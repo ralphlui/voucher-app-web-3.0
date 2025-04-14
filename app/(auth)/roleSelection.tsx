@@ -6,6 +6,7 @@ import { Button, RadioButton, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import { useUpdateUserRoleMutation } from '@/services/user.service';
+import { userLogin } from '@/store/slices/auth.slice';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 
 export default function RoleSelection() {
@@ -48,26 +49,28 @@ export default function RoleSelection() {
         userId: userInfo.userID,
         role: role as UserTypeEnum,
       }).unwrap();
-      // const result = await updateUserRole({
-      //   body: {
-      //     userID: userInfo.userID,
-      //     email: userInfo.email,
-      //     username: userInfo.username,
-      //     role: role as UserTypeEnum,
-      //     authProvider: userInfo.authProvider,
-      //     active: true,
-      //     token: accessToken,
-      //   },
-      // }).unwrap();
 
       console.log('==== Role update response ==== : ', result);
 
       if (result.success) {
         // Update stored user data with new role
-        const updatedUser = { ...userInfo, role };
+        //const updatedUser = { ...userInfo, role };
+        const updatedUser = {
+          token: accessToken,
+          refreshToken: undefined,
+          data: {
+            email: userInfo.email,
+            username: userInfo.username,
+            userID: userInfo.userID,
+            role: role as UserTypeEnum,
+            authProvider: userInfo.authProvider,
+          },
+        };
+        console.log('Checking the updated user data:', updatedUser);
         await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
 
         console.log('Role updated successfully, navigating to home');
+        dispatch(userLogin(updatedUser));
         router.push('/');
       } else {
         console.error('Role update failed:', result.message);
