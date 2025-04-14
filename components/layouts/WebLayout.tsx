@@ -2,11 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
 
+import CreateCampaignButton from '@/components/buttons/CreateCampaignButton';
+import CreateStoreButton from '@/components/buttons/CreateStoreButton';
 import LoginButton from '@/components/buttons/LoginButton';
 import useAuth from '@/hooks/useAuth';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
-import CreateCampaignButton from '@/components/buttons/CreateCampaignButton';
-import CreateStoreButton from '@/components/buttons/CreateStoreButton';
 
 const WebLayout = () => {
   const auth = useAuth();
@@ -47,7 +47,7 @@ const WebLayout = () => {
             (!auth.success && <LoginButton />) ||
             (auth.role === UserTypeEnum.MERCHANT && <CreateStoreButton />),
         }}
-        />
+      />
       <Drawer.Screen
         name="(merchant)/store"
         redirect={auth.role !== UserTypeEnum.MERCHANT}
@@ -58,7 +58,7 @@ const WebLayout = () => {
           headerRight: () =>
             (!auth.success && <LoginButton />) ||
             (auth.role === UserTypeEnum.MERCHANT && <CreateStoreButton />),
-      }}
+        }}
       />
       <Drawer.Screen
         name="(customer)/voucher"
