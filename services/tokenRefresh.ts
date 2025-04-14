@@ -29,12 +29,14 @@ const useTokenRefresh = () => {
   // Function to refresh the access token
   const refreshTokenBeforeExpire = async () => {
     try {
+      console.log('Checking token expiry...');
       const tokenData = await getTokenFromStorage();
       if (!tokenData) {
         console.error('No token data available for refresh');
         return;
       }
       const { accessToken, expiryTime } = tokenData;
+      
       if (isTokenExpired(expiryTime)) {
         const refreshResponse = await refreshToken({}).unwrap(); 
 
@@ -45,7 +47,9 @@ const useTokenRefresh = () => {
         console.log('Token refreshed successfully');
 
         // Store the new access token and its expiry time
+        // const accessToken = 'tokennn';
         const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1];
+
         if (accessToken) {
           await AsyncStorage.setItem('access_token', accessToken);
           const newExpiryTime = Date.now() + 15 * 60 * 1000; 

@@ -52,7 +52,6 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    useProxy: true,
     // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
@@ -126,7 +125,6 @@ const Login = () => {
       try {
         await AsyncStorage.setItem('userEmail', email);
         const response = await generateOtp({ body: { email: email } }).unwrap();
-        console.log('OTP generated successfully:', response);
       } catch (err) {
         console.error('Error generating OTP:', err);
       }

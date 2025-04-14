@@ -8,6 +8,7 @@ import { useGetCampaignByIdQuery } from '@/services/campaign.service';
 import useTokenRefresh from '@/services/tokenRefresh';
 import { CampaignStatusEnum } from '@/types/CampaignStatusEnum';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
+import { useNavigation } from '@react-navigation/native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, Platform } from 'react-native';
@@ -17,12 +18,15 @@ const Campaign = () => {
   const { id } = useLocalSearchParams();
   const auth = useAuth();
   const router = useRouter();
+  const navigation = useNavigation();
   const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+
   useEffect(() => {
-    if(auth.user){
+    const unsubscribe = navigation.addListener('focus', () => {
       refreshTokenBeforeExpire();
-    }
-  }, []);
+    });
+    return unsubscribe;
+  }, [navigation, refreshTokenBeforeExpire]);
 
   const { data, error, isLoading, isFetching, isSuccess, isError, refetch } = useGetCampaignByIdQuery({ id });
   const [showPin, setShowPin] = useState<boolean>(false);

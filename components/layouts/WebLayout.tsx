@@ -38,7 +38,7 @@ const WebLayout = () => {
       />
       <Drawer.Screen
         name="store"
-        redirect={auth.role !== UserTypeEnum.CUSTOMER && auth.role !== null}
+        redirect={auth.role !== UserTypeEnum.CUSTOMER}
         options={{
           drawerLabel: 'Store',
           title: 'Store',
@@ -47,7 +47,7 @@ const WebLayout = () => {
             (!auth.success && <LoginButton />) ||
             (auth.role === UserTypeEnum.MERCHANT && <CreateStoreButton />),
         }}
-      />
+        />
       <Drawer.Screen
         name="(merchant)/store"
         redirect={auth.role !== UserTypeEnum.MERCHANT}
@@ -58,7 +58,7 @@ const WebLayout = () => {
           headerRight: () =>
             (!auth.success && <LoginButton />) ||
             (auth.role === UserTypeEnum.MERCHANT && <CreateStoreButton />),
-        }}
+      }}
       />
       <Drawer.Screen
         name="(customer)/voucher"
