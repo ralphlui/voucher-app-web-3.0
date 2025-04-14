@@ -19,7 +19,8 @@ const userApi = createApi({
   reducerPath: 'user',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_AUTH_API_URL || 'http://localhost:8083/',
-    credentials: 'include',
+    // credentials: 'include',
+    // baseUrl: process.env.EXPO_PUBLIC_AUTH_API_URL,
     prepareHeaders: async (headers) => {
       headers.set('Content-Type', 'application/json');
       headers.set('Access-Control-Allow-Credentials', 'true');
