@@ -49,9 +49,10 @@ export const userApiSlice = userApi.injectEndpoints({
     }),
 
     verifyUser: builder.mutation({
-      query: ({ verifyid }) => ({
-        url: `/api/users/verify/${verifyid}`,
+      query: ({ accountVerificationCode }) => ({
+        url: `/api/users/verify`,
         method: 'PATCH',
+        body: { accountVerificationCode },
       }),
     }),
 
