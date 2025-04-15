@@ -5,8 +5,11 @@ const feedApi = createApi({
   reducerPath: 'feed',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_FEED_API_URL,
-    prepareHeaders: (headers) => {
-      headers.set('Authorization', `Bearer ${AsyncStorage.getItem('access_token')}`);
+    prepareHeaders: async (headers) => {
+      const token = await AsyncStorage.getItem('access_token');
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
       return headers;
     },
   }),

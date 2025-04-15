@@ -48,11 +48,11 @@ export const userApiSlice = userApi.injectEndpoints({
       }),
     }),
 
-    verifyUser: builder.mutation({
-      query: ({ accountVerificationCode }) => ({
+    verifyUser: builder.mutation({   // empty payload
+      query: ( accountVerificationCode ) => ({
         url: `/api/users/verify`,
         method: 'PATCH',
-        body: { accountVerificationCode },
+        body: JSON.stringify({ accountVerificationCode }),
       }),
     }),
 
