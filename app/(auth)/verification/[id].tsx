@@ -5,11 +5,13 @@ import HandleResponse from '@/components/common/HandleResponse';
 import { ActivityIndicator } from 'react-native-paper';
 
 const verification = () => {
-  const { id } = useLocalSearchParams();
+  const { accountVerificationCode } = useLocalSearchParams();
   const [verifyUser, { data, isSuccess, isError, isLoading, error }] = useVerifyUserMutation();
+
   useEffect(() => {
-    verifyUser({ id });
+    verifyUser({ accountVerificationCode });  // empty payload
   }, []);
+
   return (
     <>
       <Stack.Screen options={{ title: 'User Verfication' }} />
