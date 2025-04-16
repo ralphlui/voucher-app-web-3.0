@@ -52,7 +52,7 @@ export const userApiSlice = userApi.injectEndpoints({
       query: ( accountVerificationCode ) => ({
         url: `/api/users/verify`,
         method: 'PATCH',
-        body: JSON.stringify({ accountVerificationCode }),
+        body: { accountVerificationCode },
       }),
     }),
 
