@@ -159,17 +159,6 @@ export const userApiSlice = userApi.injectEndpoints({
         credentials: 'include', // This is important for receiving cookies
       }),
     }),
-
-    // googleRegister: builder.mutation({
-    //   query: ({ body }) => ({
-    //     url: '/api/users/google/userinfo',
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${body.token}`,
-    //     },
-    //   }),
-    // }),
   }),
 });
 
