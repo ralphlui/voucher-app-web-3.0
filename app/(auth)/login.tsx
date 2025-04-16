@@ -52,11 +52,9 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
     redirectUri: Platform.select({
-      web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+      web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
       default: makeRedirectUri({
         native: 'voucher-app://',
       }),
