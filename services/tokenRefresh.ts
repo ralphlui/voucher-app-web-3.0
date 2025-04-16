@@ -13,9 +13,12 @@ const getTokenFromStorage = async () => {
   try {
     const accessToken = await AsyncStorage.getItem('access_token');
     const expiryTime = await AsyncStorage.getItem('accessTokenExpiry');
+    console.log('Access token:', accessToken);
+    console.log('Expiry time:', expiryTime);
     
     if (!accessToken || !expiryTime) {
       console.error('No token or expiry time found');
+      return;
     }
     return { accessToken, expiryTime };
   } catch (error) {
@@ -39,6 +42,7 @@ const useTokenRefresh = () => {
       
       if (isTokenExpired(expiryTime)) {
         const refreshResponse = await refreshToken({}).unwrap(); 
+        console.log('Refresh response:', refreshResponse);
 
         if (!refreshResponse.ok) {
           throw new Error('Failed to refresh token');
@@ -56,6 +60,7 @@ const useTokenRefresh = () => {
           const newExpiryTime = Date.now() + 15 * 60 * 1000; 
           console.log('New expiry time:', newExpiryTime);
           setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime});
+          // headers.set();
         }
         else {
           throw new Error('Access token not found in cookies');
