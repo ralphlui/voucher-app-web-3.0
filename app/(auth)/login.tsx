@@ -15,9 +15,10 @@ import { useAppDispatch } from '@/hooks/useRedux';
 import {
   useGenerateOtpMutation,
   useLoginMutation,
-  useGoogleLoginMutation,
+  useGoogleRegisterMutation,
 } from '@/services/user.service';
 import { userLogin } from '@/store/slices/auth.slice';
+import { UserTypeEnum } from '@/types/UserTypeEnum';
 import { logInSchema } from '@/utils/validation';
 
 interface LoginFormData {
@@ -33,7 +34,7 @@ const Login = () => {
 
   const [login, { data, isSuccess, isError, isLoading, error }] = useLoginMutation();
   const [generateOtp, { isLoading: isGeneratingOtp }] = useGenerateOtpMutation();
-  const [googleLogin] = useGoogleLoginMutation();
+  const [googleRegister] = useGoogleRegisterMutation();
 
   const { control, setFocus, handleSubmit, reset } = useForm<LoginFormData>({
     resolver: yupResolver(logInSchema),
@@ -52,11 +53,9 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    // androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    // iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     responseType: 'id_token',
     redirectUri: Platform.select({
-      web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+      web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
       default: makeRedirectUri({
         native: 'voucher-app://',
       }),
@@ -64,55 +63,99 @@ const Login = () => {
     scopes: ['profile', 'email'],
   });
 
+  // Add message listener for OAuth callback
   useEffect(() => {
-    // Log redirect URI when component mounts
+    if (Platform.OS === 'web') {
+      const handleMessage = (event: MessageEvent) => {
+        if (event.data.type === 'OAUTH_SUCCESS') {
+          handleGoogleSignIn(event.data.token);
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }
+  }, []);
+
+  useEffect(() => {
     console.log('=== Google Auth Configuration at Login ===');
     console.log(
       'Redirect URI at Google Auth -> Login:',
       Platform.select({
-        web: process.env.EXPO_PUBLIC_REDIRECT_URI,
+        web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
         default: makeRedirectUri({
           native: 'voucher-app://',
         }),
       })
     );
-
-    if (response) {
-      console.log('=== Google Auth Response at Login ===');
-      console.log('Response type:', response.type);
-      console.log('Full response:', response);
-
-      if (response?.type === 'success') {
-        const { id_token } = response.params;
-        console.log('=== Google Auth Success at Login ===');
-        console.log('ID Token:', id_token);
-
-        // Send Google token to backend
-        googleLogin({
-          body: {
-            token: id_token,
-          },
-        })
-          .unwrap()
-          .then((data) => {
-            if (data.success) {
-              console.log('=== Backend Response ===');
-              console.log('Login success:', data);
-              dispatch(userLogin(data));
-              router.push('/');
-            } else {
-              console.error('=== Backend Error ===');
-              console.error('Google login failed:', data.message);
-            }
-          })
-          .catch((error) => {
-            console.error('=== Backend Error ===');
-            console.error('Google login failed:', error);
-          });
-      }
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      console.log('=== Google Auth Success at Login ===');
+      console.log('Google Auth ID Token:', id_token);
+      handleGoogleSignIn(id_token);
     }
   }, [response]);
 
+  const handleGoogleSignIn = async (token: string) => {
+    try {
+      const result = await googleRegister({
+        body: { token },
+      }).unwrap();
+
+      console.log('=== Google Register Response ===', result);
+
+      if (result.success) {
+        console.log('Google auth successful, try to redirect the role selection page.');
+        await AsyncStorage.setItem('user', JSON.stringify(result.data));
+        console.log('User data after Google registration:', result.data);
+        console.log('User ID after Google registration:', result.data.userID);
+        console.log('Checking the document cookie : ', document.cookie);
+
+        const cookies = document.cookie.split(';');
+        const accessToken = cookies
+          .find((cookie) => cookie.includes('access_token'))
+          ?.split('=')[1];
+        const refreshToken = cookies
+          .find((cookie) => cookie.includes('refresh_token'))
+          ?.split('=')[1];
+
+        console.log('Access Token after register for role selection page call :', accessToken);
+        console.log('Refresh Token after register for role selection page call :', refreshToken);
+
+        //if (accessToken && refreshToken) {
+        if (accessToken) {
+          await AsyncStorage.setItem('access_token', accessToken);
+          await AsyncStorage.setItem('refresh_token', accessToken);
+
+          const loginPayload = {
+            token: accessToken,
+            refreshToken: undefined,
+            data: {
+              email: result.data.email,
+              username: result.data.username,
+              userID: result.data.userID,
+              role: result.data.role as UserTypeEnum,
+              authProvider: result.data.authProvider,
+            },
+          };
+
+          await dispatch(userLogin(loginPayload));
+
+          if (result.data.role === UserTypeEnum.UNDEFINED) {
+            console.log('Navigating to role selection page...');
+            router.push('/(auth)/roleSelection');
+          } else {
+            console.log('Navigating to home page...');
+            router.push('/');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Google sign in error:', error);
+    }
+  };
+
+  //This is for normal login
   useEffect(() => {
     setFocus('email');
   }, [setFocus]);
@@ -124,7 +167,7 @@ const Login = () => {
       });
       try {
         await AsyncStorage.setItem('userEmail', email);
-        const response = await generateOtp({ body: { email: email } }).unwrap();
+        const response = await generateOtp({ body: { email } }).unwrap();
       } catch (err) {
         console.error('Error generating OTP:', err);
       }
@@ -167,7 +210,7 @@ const Login = () => {
               mode="contained"
               onPress={() => promptAsync()}
               disabled={!request}>
-              Login with Google
+              Sign in with Google
             </Button>
             <View style={styles.dividerContainer}>
               <View style={styles.divider} />
@@ -276,3 +319,6 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
+function googleRegister(arg0: { body: { token: string } }) {
+  throw new Error('Function not implemented.');
+}

@@ -21,11 +21,11 @@ export default function OAuthCallback() {
         } else {
           // If no opener, redirect back to register
           console.log('No opener window found, redirecting to register');
-          router.replace('/(auth)/register');
+          router.replace('/(auth)/login');
         }
       } else {
         console.log('No token found in URL');
-        router.replace('/(auth)/register');
+        router.replace('/(auth)/login');
       }
     }
   }, []);
