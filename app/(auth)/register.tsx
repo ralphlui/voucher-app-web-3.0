@@ -181,7 +181,7 @@ const Register = () => {
             <View style={styles.icon}>
               <Avatar.Icon icon="ticket-percent-outline" />
             </View>
-            <Button
+            {/* <Button
               style={styles.button}
               icon="google"
               mode="contained"
@@ -193,7 +193,7 @@ const Register = () => {
               <View style={styles.divider} />
               <Text style={styles.dividerText}>OR</Text>
               <View style={styles.divider} />
-            </View>
+            </View> */}
             <FormBuilder
               control={control}
               setFocus={setFocus}
