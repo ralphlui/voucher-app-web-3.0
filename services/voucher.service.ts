@@ -5,10 +5,6 @@ export const voucherApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
     getVouchersByUserId: builder.query({
       query: ({ userId, status, page_size = 10, page_number = 0 }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,   
-        }, 
         url: `/api/core/vouchers/users`,
         method: 'POST',
         body: JSON.stringify({userId}),
@@ -31,10 +27,6 @@ export const voucherApiSlice = coreApi.injectEndpoints({
     }),
     getVouchersByCampaignId: builder.query({
       query: ({ campaignId, page_size = 10, page_number = 0 }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        }, 
         url: `/api/core/vouchers/campaigns`,
         method: 'POST',
         body: JSON.stringify({campaignId}),
@@ -57,10 +49,6 @@ export const voucherApiSlice = coreApi.injectEndpoints({
     }),
     getVoucherById: builder.mutation({
       query: ({voucherId}) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/core/vouchers`,
         method: 'POST',
         body: JSON.stringify({voucherId}),
@@ -68,10 +56,6 @@ export const voucherApiSlice = coreApi.injectEndpoints({
     }),
     claimVoucher: builder.mutation({
       query: ({ campaignId, claimedBy }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: '/api/core/vouchers/claim',
         method: 'POST',
         body: JSON.stringify({ campaignId, claimedBy }),
@@ -79,10 +63,6 @@ export const voucherApiSlice = coreApi.injectEndpoints({
     }),
     consumeVoucher: builder.mutation({
       query: ({ voucherId }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/core/vouchers/consume`,
         method: 'PATCH',
         body: JSON.stringify({ voucherId }),

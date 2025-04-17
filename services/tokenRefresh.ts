@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRefreshTokenMutation} from '@/services/user.service';
 import { setAuthData } from '@/store/slices/auth.slice';
+import { useAppDispatch } from '@/hooks/useRedux';
+
+const dispatch = useAppDispatch();
 
 // Function to check if the token is expired
 const isTokenExpired = (expiryTime: string | null) => {
@@ -59,7 +62,7 @@ const useTokenRefresh = () => {
           await AsyncStorage.setItem('access_token', accessToken);
           const newExpiryTime = Date.now() + 15 * 60 * 1000; 
           console.log('New expiry time:', newExpiryTime);
-          setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime});
+          dispatch(setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime}));
           // headers.set();
         }
         else {
