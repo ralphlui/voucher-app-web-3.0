@@ -17,7 +17,7 @@ import {
   useLoginMutation,
   useGoogleRegisterMutation,
 } from '@/services/user.service';
-import { userLogin } from '@/store/slices/auth.slice';
+import { setAuthData, userLogin } from '@/store/slices/auth.slice';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 import { logInSchema } from '@/utils/validation';
 
@@ -146,6 +146,7 @@ const Login = () => {
             router.push('/(auth)/roleSelection');
           } else {
             console.log('Navigating to home page...');
+            dispatch(setAuthData({ token: accessToken, success: true, expiryTime: 15*60*1000 }));
             router.push('/');
           }
         }
