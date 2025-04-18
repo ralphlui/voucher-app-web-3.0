@@ -3,8 +3,6 @@ import { useRefreshTokenMutation} from '@/services/user.service';
 import { setAuthData } from '@/store/slices/auth.slice';
 import { useAppDispatch } from '@/hooks/useRedux';
 
-const dispatch = useAppDispatch();
-
 // Function to check if the token is expired
 const isTokenExpired = (expiryTime: string | null) => {
   if (!expiryTime) return true;
@@ -31,6 +29,7 @@ const getTokenFromStorage = async () => {
 
 const useTokenRefresh = () => {
   const [refreshToken, { isLoading: tokenLoading, isSuccess: tokenSuccess, isError: tokenError }] = useRefreshTokenMutation(); 
+  const dispatch = useAppDispatch();
 
   // Function to refresh the access token
   const refreshTokenBeforeExpire = async () => {
@@ -63,7 +62,6 @@ const useTokenRefresh = () => {
           const newExpiryTime = Date.now() + 15 * 60 * 1000; 
           console.log('New expiry time:', newExpiryTime);
           dispatch(setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime}));
-          // headers.set();
         }
         else {
           throw new Error('Access token not found in cookies');
