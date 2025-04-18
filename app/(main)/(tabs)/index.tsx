@@ -15,10 +15,27 @@ import useResponsiveColumns from '@/hooks/useResponsiveColumns';
 import { useGetCampaignsQuery } from '@/services/campaign.service';
 import { Campaign } from '@/types/Campaign';
 import { Searchbar } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import useTokenRefresh from '@/services/tokenRefresh';
+import useAuth from '@/hooks/useAuth';
 
 const CampaignTab = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const navigation = useNavigation();
+  const auth = useAuth();
+  const { refreshTokenBeforeExpire, tokenLoading, tokenSuccess, tokenError } = useTokenRefresh();
+
+  useEffect(() => {
+    if (auth.user) {
+      const unsubscribe = navigation.addListener('focus', () => {
+        refreshTokenBeforeExpire();
+      });
+      return unsubscribe;
+    }
+  }, [navigation, refreshTokenBeforeExpire]);
+
   const numColumns = useResponsiveColumns();
   const debouncedSearchQuery = useDeferredValue(searchQuery);
   const { pageNumber, setPageNumber, pageSize } = usePagination();
