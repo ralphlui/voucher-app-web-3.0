@@ -6,7 +6,7 @@ import { Button, RadioButton, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import { useUpdateUserRoleMutation } from '@/services/user.service';
-import { userLogin } from '@/store/slices/auth.slice';
+import { setAuthData, userLogin } from '@/store/slices/auth.slice';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 
 export default function RoleSelection() {
@@ -71,6 +71,7 @@ export default function RoleSelection() {
 
         console.log('Role updated successfully, navigating to home');
         dispatch(userLogin(updatedUser));
+        dispatch(setAuthData({ token: accessToken, success: true, expiryTime: Date.now() + 15 * 60 * 1000 }));
         router.push('/');
       } else {
         console.error('Role update failed:', result.message);

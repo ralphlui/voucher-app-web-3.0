@@ -46,7 +46,7 @@ const useTokenRefresh = () => {
         const refreshResponse = await refreshToken({}).unwrap(); 
         console.log('Refresh response:', refreshResponse);
 
-        if (!refreshResponse.ok) {
+        if (!refreshResponse.success) {
           throw new Error('Failed to refresh token');
         }
 
