@@ -6,9 +6,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
     getCampaigns: builder.query({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-        },
         url: `/api/core/campaigns?description=${description}&page=${page_number}&size=${page_size}`,
         method: 'GET',
       }),
@@ -30,10 +27,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     getCampaignsByUserId: builder.query({
       query: ({ description, userId, page_size = 10, page_number = 0 }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
-        },
         url: `/api/core/campaigns/users`,
         method: 'POST',
         body: {userId},
@@ -57,10 +50,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     getCampaignsByStoreId: builder.query({
       query: ({ storeId, status, description, page_size = 10, page_number = 0 }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/core/campaigns/stores`,
         method: 'POST',
         body: { storeId },
@@ -83,10 +72,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     getCampaignById: builder.query({
       query: ({ id }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/core/campaigns/`,
         method: 'POST',
         body: { id },
@@ -94,10 +79,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     createCampaign: builder.mutation({
       query: (campaign: Campaign) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/core/campaigns`,
         method: 'POST',
         body: campaign,
@@ -108,10 +89,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     updateCampaign: builder.mutation({
       query: (campaign: Campaign) => ({
-        headers:{
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`
-        },
         url: `/api/core/campaigns/update`,
         method: 'PUT',
         body: campaign,
@@ -122,10 +99,6 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     promoteCampaign: builder.mutation({
       query: ({ userId, campaignId }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/core/campaigns/promote`,
         method: 'PATCH',
         body: { userId, campaignId },

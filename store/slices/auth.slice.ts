@@ -89,7 +89,7 @@ const authSlice = createSlice({
       action: PayloadAction<{ token: string | null; success: boolean; expiryTime: number | null }>
     ) => {
       state.token = action.payload.token;
-      state.success = action.payload.success;
+      state.success = true;    // check if shld set to true
       state.expiryTime = action.payload.expiryTime;
       AsyncStorage.setItem('accessTokenExpiry', action.payload.expiryTime!.toString());
     },

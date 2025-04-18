@@ -5,10 +5,6 @@ export const feedApiSlice = feedApi.injectEndpoints({
   endpoints: (builder) => ({
     getFeedByUserId: builder.query({
       query: ({ userId, page_size = 5, page_number = 0 }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
-        },
         url: `/api/feeds/users`,
         method: 'POST',
         body: { userId },
@@ -31,10 +27,6 @@ export const feedApiSlice = feedApi.injectEndpoints({
     }),
     getFeedById: builder.mutation({
       query: ({body}) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
-        },
         url: `/api/feeds/id`,
         method: 'POST',
         body,
@@ -42,10 +34,6 @@ export const feedApiSlice = feedApi.injectEndpoints({
     }),
     updateReadStatus: builder.mutation({
       query: ({feedId}) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`, 
-        },
         url: `/api/feeds/readStatus`,
         method: 'PATCH',
         body: {feedId}

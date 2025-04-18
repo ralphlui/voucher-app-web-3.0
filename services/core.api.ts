@@ -8,6 +8,7 @@ const coreApi = createApi({
     baseUrl: process.env.EXPO_PUBLIC_CORE_API_URL,
     prepareHeaders: async (headers) => {
     //  console.log('Preparing headers for core API:', AsyncStorage.getItem('access_token'));
+      headers.set('Content-Type', 'application/json');
 
       const token = await AsyncStorage.getItem('access_token');
       if(token) {

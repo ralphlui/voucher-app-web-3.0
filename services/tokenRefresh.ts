@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRefreshTokenMutation} from '@/services/user.service';
 import { setAuthData } from '@/store/slices/auth.slice';
+import { useAppDispatch } from '@/hooks/useRedux';
 
 // Function to check if the token is expired
 const isTokenExpired = (expiryTime: string | null) => {
@@ -28,6 +29,7 @@ const getTokenFromStorage = async () => {
 
 const useTokenRefresh = () => {
   const [refreshToken, { isLoading: tokenLoading, isSuccess: tokenSuccess, isError: tokenError }] = useRefreshTokenMutation(); 
+  const dispatch = useAppDispatch();
 
   // Function to refresh the access token
   const refreshTokenBeforeExpire = async () => {
@@ -59,8 +61,7 @@ const useTokenRefresh = () => {
           await AsyncStorage.setItem('access_token', accessToken);
           const newExpiryTime = Date.now() + 15 * 60 * 1000; 
           console.log('New expiry time:', newExpiryTime);
-          setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime});
-          // headers.set();
+          dispatch(setAuthData({token: accessToken, success: true, expiryTime: newExpiryTime}));
         }
         else {
           throw new Error('Access token not found in cookies');

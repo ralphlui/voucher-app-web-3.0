@@ -66,10 +66,6 @@ export const userApiSlice = userApi.injectEndpoints({
 
     getUsers: builder.query({
       query: ({ page }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: `/api/user?page=${page}`,
         method: 'GET',
       }),
@@ -93,10 +89,6 @@ export const userApiSlice = userApi.injectEndpoints({
 
     editUser: builder.mutation({
       query: ({ body }) => ({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: '/api/users',
         method: 'PUT',
         body,
@@ -128,9 +120,6 @@ export const userApiSlice = userApi.injectEndpoints({
 
     verifyToken: builder.mutation({
       query: () => ({
-        headers: {
-          Authorisation: `Bearer ${AsyncStorage.getItem('access_token')}`,
-        },
         url: '/api/users/validateToken',
         method: 'POST',
       }),
@@ -159,17 +148,6 @@ export const userApiSlice = userApi.injectEndpoints({
         credentials: 'include', // This is important for receiving cookies
       }),
     }),
-
-    // googleRegister: builder.mutation({
-    //   query: ({ body }) => ({
-    //     url: '/api/users/google/userinfo',
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${body.token}`,
-    //     },
-    //   }),
-    // }),
   }),
 });
 
