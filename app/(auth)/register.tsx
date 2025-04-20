@@ -115,7 +115,6 @@ const Register = () => {
         console.log('Access Token after register for role selection page call :', accessToken);
         console.log('Refresh Token after register for role selection page call :', refreshToken);
 
-        //if (accessToken && refreshToken) {
         if (accessToken) {
           await AsyncStorage.setItem('access_token', accessToken);
           await AsyncStorage.setItem('refresh_token', accessToken);
@@ -123,7 +122,6 @@ const Register = () => {
           await dispatch(
             userLogin({
               token: accessToken,
-              //refreshToken: refreshToken || null,
               data: {
                 ...result.data,
                 role: result.data.role as UserTypeEnum,

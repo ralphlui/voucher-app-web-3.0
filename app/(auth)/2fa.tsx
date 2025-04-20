@@ -44,34 +44,6 @@ const verifyCode = () => {
     }
   }, [email, setFocus]);
 
-  // async function tryLocalSignin() {
-  //   dispatch(
-  //     setAuthData({
-  //       token: null,
-  //       success: false,
-  //     })
-  //   );
-  //   const token = await AsyncStorage.getItem('access_token');
-  //   if (token) {
-  //     dispatch(
-  //       setAuthData({
-  //         token,
-  //         success: true,
-  //       })
-  //     );
-  //   } else {
-  //     dispatch(
-  //       setAuthData({
-  //         token: null,
-  //         success: false,
-  //       })
-  //     );
-  //   }
-  // }
-  
-  // useEffect(() => {
-  //   tryLocalSignin();
-  // }, []);
 
   const onSubmit = async ({ otp }: TwoFaForm) => { 
     const storedEmail = await AsyncStorage.getItem('userEmail');
@@ -82,7 +54,6 @@ const verifyCode = () => {
     setEmail(storedEmail);
     try{
       const response = await validateOtp({body: { email: storedEmail, otp: otp }}).unwrap();
-      console.log('OTP validation response: ', response);
       
       if (response.success){
         console.log('OTP validated successfully!');
@@ -90,11 +61,9 @@ const verifyCode = () => {
         const token = document.cookie.startsWith('access_token=') 
         ? document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1] 
         : null;
-        // const token = "123456";
-        console.log('Token from cookie:', token);
 
         if (!token) {
-          console.error('Token not found in cookies!');
+          console.error('Token does not exist');
           return;
         }
         dispatch(userLogin({ token: token, data: response.data }));
@@ -103,7 +72,7 @@ const verifyCode = () => {
       }
     }
     catch (err){
-      console.log('Error in validating OTP:  ', err);
+      console.error('Error in validating OTP:  ', err);
     }
   }; 
 
@@ -170,7 +139,7 @@ const verifyCode = () => {
       </View>
     </>
   );
-};   // verify back button works
+}; 
 
 const styles = StyleSheet.create({
   containerStyle: {

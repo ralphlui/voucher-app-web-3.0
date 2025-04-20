@@ -20,7 +20,6 @@ const PromoteCampaignButton = ({ userId, campaignId }: PromoteCampaignButtonProp
           isSuccess={isSuccess}
           error={error || 'Error occurs'}
           message={data?.message}
-          //   onSuccess={onSuccess}
         />
       )}
       <Button onPress={() => promoteCampaign({ userId, campaignId })} loading={isLoading}>

@@ -29,7 +29,6 @@ const userApi = createApi({
       // Get and set the token
       const token = await AsyncStorage.getItem('access_token');
       if (token) {
-        console.log('Setting token in headers:', token);
         headers.set('Authorization', `Bearer ${token}`);
       }
 
