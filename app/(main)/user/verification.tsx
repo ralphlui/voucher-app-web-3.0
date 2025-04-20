@@ -9,7 +9,7 @@ const verification = () => {
   const [verifyUser, { data, isSuccess, isError, isLoading, error }] = useVerifyUserMutation();
 
   useEffect(() => {
-    verifyUser({ accountVerificationCode });  // empty payload
+    verifyUser({ accountVerificationCode });
   }, []);
 
   return (

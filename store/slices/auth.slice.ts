@@ -4,16 +4,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Auth } from '@/types/Auth';
 import { UserTypeEnum } from '@/types/UserTypeEnum';
 
-// interface WebSocketPayload {
-//   data: {
-//     userID: string;
-//     email: string;
-//     role: UserTypeEnum;
-//     username: string;
-//     authProvider: string;
-//   };
-// }
-
 interface LoginPayload {
   token: string;
   refreshToken?: string;
@@ -54,7 +44,7 @@ const authSlice = createSlice({
       state.user = null;
       state.userId = null;
       state.token = null;
-      state.refreshToken = null; // Add this line
+      state.refreshToken = null;
       state.success = false;
       state.error = null;
       state.role = null;
@@ -89,7 +79,7 @@ const authSlice = createSlice({
       action: PayloadAction<{ token: string | null; success: boolean; expiryTime: number | null }>
     ) => {
       state.token = action.payload.token;
-      state.success = true;    // check if shld set to true
+      state.success = true;
       state.expiryTime = action.payload.expiryTime;
       AsyncStorage.setItem('accessTokenExpiry', action.payload.expiryTime!.toString());
     },

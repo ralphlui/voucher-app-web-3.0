@@ -29,7 +29,6 @@ const ClaimVoucherButton = ({ campaignId, claimedBy }: ClaimVoucherProps) => {
       )}
       <Button
         loading={isLoading}
-        // mode="contained"
         onPress={() => claimVoucher({ campaignId, claimedBy })}>
         Claim
       </Button>
