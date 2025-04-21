@@ -146,7 +146,8 @@ const Login = () => {
             router.push('/(auth)/roleSelection');
           } else {
             console.log('Navigating to home page...');
-            dispatch(setAuthData({ token: accessToken, success: true, expiryTime: Date.now() + 15 * 60 * 1000 }));
+            const expiryDuration = process.env.IS_PROD_ENV ? 5 * 60 * 1000 : 15 * 60 * 1000; 
+            dispatch(setAuthData({ token: accessToken, success: true, expiryTime: Date.now() + expiryDuration }));
             router.push('/');
           }
         }
