@@ -71,7 +71,8 @@ export default function RoleSelection() {
 
         console.log('Role updated successfully, navigating to home');
         dispatch(userLogin(updatedUser));
-        dispatch(setAuthData({ token: accessToken, success: true, expiryTime: Date.now() + 15 * 60 * 1000 }));
+        const expiryDuration = process.env.IS_PROD_ENV ? 5 * 60 * 1000 : 15 * 60 * 1000; 
+        dispatch(setAuthData({ token: accessToken, success: true, expiryTime: Date.now() + expiryDuration}));
         router.push('/');
       } else {
         console.error('Role update failed:', result.message);
