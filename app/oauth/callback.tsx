@@ -11,7 +11,7 @@ export default function OAuthCallback() {
       // Extract token from URL hash
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const idToken = hashParams.get('id_token');
-      console.log('Received token in callback:', idToken ? 'Token exists' : 'No token');
+      //console.log('Received token in callback:', idToken ? 'Token exists' : 'No token');
 
       if (idToken) {
         // Send token back to main window

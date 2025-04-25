@@ -19,14 +19,15 @@ export default function RoleSelection() {
     // Check if we have the necessary user data on mount
     const checkUserData = async () => {
       const userData = await AsyncStorage.getItem('user');
-      console.log('User data in role selection:', userData);
+      //console.log('User data in role selection:', userData);
+      console.log('===== User data in role selection=====');
     };
     checkUserData();
   }, []);
 
   const handleSubmit = async () => {
     try {
-      console.log('Submitting role:', role);
+      //console.log('Submitting role', role);
       // Get the stored Google user info
       const userInfoString = await AsyncStorage.getItem('user');
       const accessToken = await AsyncStorage.getItem('access_token');
@@ -41,8 +42,8 @@ export default function RoleSelection() {
       }
 
       const userInfo = JSON.parse(userInfoString);
-      console.log('Current user data:', userInfo);
-      console.log('Access token at role selection page :', accessToken);
+      //console.log('Current user data:', userInfo);
+      //console.log('Access token at role selection page :', accessToken);
 
       // Update user with selected role
       const result = await updateUserRole({
@@ -50,7 +51,7 @@ export default function RoleSelection() {
         role: role as UserTypeEnum,
       }).unwrap();
 
-      console.log('==== Role update response ==== : ', result);
+      //console.log('==== Role update response ==== : ', result);
 
       if (result.success) {
         // Update stored user data with new role
@@ -66,7 +67,7 @@ export default function RoleSelection() {
             authProvider: userInfo.authProvider,
           },
         };
-        console.log('Checking the updated user data:', updatedUser);
+        //console.log('Checking the updated user data:', updatedUser);
         await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
 
         console.log('Role updated successfully, navigating to home');
