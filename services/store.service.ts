@@ -57,7 +57,7 @@ export const storeApiSlice = coreApi.injectEndpoints({
       query: ({ id }) => ({
         url: `/api/core/stores/my-store`,
         method: 'POST',
-        body: { id },
+        body: { storeId: id },
       }),
     }),
     createStore: builder.mutation({

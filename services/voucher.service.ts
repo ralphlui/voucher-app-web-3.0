@@ -7,7 +7,7 @@ export const voucherApiSlice = coreApi.injectEndpoints({
       query: ({ userId, status, page_size = 10, page_number = 0 }) => ({
         url: `/api/core/vouchers/users`,
         method: 'POST',
-        body: JSON.stringify({userId}),
+        body: JSON.stringify({claimedBy: userId}),
         params: {status, page_size, page_number},
       }),
       providesTags: ['Voucher'],
