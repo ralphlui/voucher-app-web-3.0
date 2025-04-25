@@ -79,19 +79,19 @@ const Login = () => {
 
   useEffect(() => {
     console.log('=== Google Auth Configuration at Login ===');
-    console.log(
-      'Redirect URI at Google Auth -> Login:',
-      Platform.select({
-        web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
-        default: makeRedirectUri({
-          native: 'voucher-app://',
-        }),
-      })
-    );
+    // console.log(
+    //   'Redirect URI at Google Auth -> Login:',
+    //   Platform.select({
+    //     web: `${process.env.EXPO_PUBLIC_REDIRECT_URI}`,
+    //     default: makeRedirectUri({
+    //       native: 'voucher-app://',
+    //     }),
+    //   })
+    // );
     if (response?.type === 'success') {
       const { id_token } = response.params;
       console.log('=== Google Auth Success at Login ===');
-      console.log('Google Auth ID Token:', id_token);
+      //console.log('Google Auth ID Token:', id_token);
       handleGoogleSignIn(id_token);
     }
   }, [response]);
@@ -107,9 +107,9 @@ const Login = () => {
       if (result.success) {
         console.log('Google auth successful, try to redirect the role selection page.');
         await AsyncStorage.setItem('user', JSON.stringify(result.data));
-        console.log('User data after Google registration:', result.data);
-        console.log('User ID after Google registration:', result.data.userID);
-        console.log('Checking the document cookie : ', document.cookie);
+        //console.log('User data after Google registration:', result.data);
+        //console.log('User ID after Google registration:', result.data.userID);
+       // console.log('Checking the document cookie : ', document.cookie);
 
         const cookies = document.cookie.split(';');
         const accessToken = cookies
@@ -119,8 +119,7 @@ const Login = () => {
           .find((cookie) => cookie.includes('refresh_token'))
           ?.split('=')[1];
 
-        console.log('Access Token after register for role selection page call :', accessToken);
-        console.log('Refresh Token after register for role selection page call :', refreshToken);
+        //console.log('Access Token after register for role selection page call :', accessToken);
 
         //if (accessToken && refreshToken) {
         if (accessToken) {
