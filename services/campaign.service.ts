@@ -74,7 +74,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
       query: ({ id }) => ({
         url: `/api/core/campaigns/`,
         method: 'POST',
-        body: { id },
+        body: { campaignId: id },
       }),
     }),
     createCampaign: builder.mutation({
