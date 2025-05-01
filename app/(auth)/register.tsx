@@ -119,7 +119,7 @@ const Register = () => {
           await AsyncStorage.setItem('access_token', accessToken);
           await AsyncStorage.setItem('refresh_token', accessToken);
 
-          await dispatch(
+          dispatch(
             userLogin({
               token: accessToken,
               data: {
