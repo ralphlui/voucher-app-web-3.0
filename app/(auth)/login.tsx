@@ -138,7 +138,7 @@ const Login = () => {
             },
           };
 
-          await dispatch(userLogin(loginPayload));
+          dispatch(userLogin(loginPayload));
 
           if (result.data.role === UserTypeEnum.UNDEFINED) {
             console.log('Navigating to role selection page...');
