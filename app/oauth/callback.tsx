@@ -15,8 +15,9 @@ export default function OAuthCallback() {
 
       if (idToken) {
         // Send token back to main window
+        const TARGET_ORIGIN = process.env.TARGET_ORIGIN;
         if (window.opener) {
-          window.opener.postMessage({ type: 'OAUTH_SUCCESS', token: idToken }, '*');
+          window.opener.postMessage({ type: 'OAUTH_SUCCESS', token: idToken }, TARGET_ORIGIN);
           window.close();
         } else {
           // If no opener, redirect back to register
