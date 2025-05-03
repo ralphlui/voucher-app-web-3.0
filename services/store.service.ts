@@ -5,7 +5,9 @@ export const storeApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
     getStores: builder.query({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
-        url: `/api/core/stores?query=${description}&page=${page_number}&size=${page_size}`,
+        url: description !== '' && description !== null
+        ? `/api/core/stores?query=${description}&page=${page_number}&size=${page_size}`
+        : `/api/core/stores?page=${page_number}&size=${page_size}`,
         method: 'GET',
       }),
       providesTags: ['Store'],
