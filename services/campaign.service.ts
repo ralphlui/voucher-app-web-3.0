@@ -29,10 +29,11 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     getCampaignsByUserId: builder.query({
       query: ({ description, userId, page_size = 10, page_number = 0 }) => ({
-        url: `/api/core/campaigns/users`,
+        url: description !== '' && description !== null
+        ? `/api/core/campaigns/users?description=${description}&page=${page_number}&size=${page_size}` 
+        : `/api/core/campaigns/users?page=${page_number}&size=${page_size}`,
         method: 'POST',
         body: {userId},
-        params: { description, page_size, page_number },
       }),
       providesTags: (result, error, { userId }) => [{ type: 'Campaign', id: `USER_${userId}` }],
       serializeQueryArgs: ({ endpointName }) => {
