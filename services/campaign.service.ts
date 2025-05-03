@@ -55,7 +55,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
         url: `/api/core/campaigns/stores`,
         method: 'POST',
         body: { storeId },
-        params: { status, description, page_size, page_number },
+        params: { status, description, size: page_size, page: page_number },
       }),
       providesTags: ['Campaign'],
       serializeQueryArgs: ({ endpointName }) => {
