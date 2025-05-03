@@ -6,7 +6,9 @@ export const campaignApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
     getCampaigns: builder.query({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
-        url: `/api/core/campaigns?description=${description}&page=${page_number}&size=${page_size}`,
+      url: description !== '' && description !== null
+        ? `/api/core/campaigns/search?description=${description}&page=${page_number}&size=${page_size}` 
+        : `/api/core/campaigns?page=${page_number}&size=${page_size}`,
         method: 'GET',
       }),
       providesTags: ['Campaign'],
