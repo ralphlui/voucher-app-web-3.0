@@ -72,7 +72,7 @@ export default function RoleSelection() {
 
         console.log('Role updated successfully, navigating to home');
         dispatch(userLogin(updatedUser));
-        const expiryDuration = process.env.IS_PROD_ENV ? 5 * 60 * 1000 : 15 * 60 * 1000; 
+        const expiryDuration = process.env.EXPO_PUBLIC_IS_PROD_ENV === 'true' ? 5 * 60 * 1000 : 15 * 60 * 1000; 
         dispatch(setAuthData({ token: accessToken, success: true, expiryTime: Date.now() + expiryDuration}));
         router.push('/');
       } else {
