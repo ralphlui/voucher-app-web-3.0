@@ -50,7 +50,7 @@ const useTokenRefresh = () => {
 
         if (accessToken) {
           await AsyncStorage.setItem('access_token', accessToken);
-          const expiryDuration = process.env.IS_PROD_ENV ? 5 * 60 * 1000 : 15 * 60 * 1000; 
+          const expiryDuration = process.env.EXPO_PUBLIC_IS_PROD_ENV === 'true' ? 5 * 60 * 1000 : 15 * 60 * 1000; 
           dispatch(setAuthData({token: accessToken, success: true, expiryTime: Date.now() + expiryDuration}));
         }
         else {
