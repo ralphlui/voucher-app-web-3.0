@@ -6,9 +6,10 @@ export const campaignApiSlice = coreApi.injectEndpoints({
   endpoints: (builder) => ({
     getCampaigns: builder.query({
       query: ({ description, page_size = 10, page_number = 0 }) => ({
-      url: description !== '' && description !== null
-        ? `/api/core/campaigns/search?description=${description}&page=${page_number}&size=${page_size}` 
-        : `/api/core/campaigns?page=${page_number}&size=${page_size}`,
+        url:
+          description !== '' && description !== null
+            ? `/api/core/campaigns/search?description=${description}&page=${page_number}&size=${page_size}`
+            : `/api/core/campaigns?page=${page_number}&size=${page_size}`,
         method: 'GET',
       }),
       providesTags: ['Campaign'],
@@ -29,11 +30,12 @@ export const campaignApiSlice = coreApi.injectEndpoints({
     }),
     getCampaignsByUserId: builder.query({
       query: ({ description, userId, page_size = 10, page_number = 0 }) => ({
-        url: description !== '' && description !== null
-        ? `/api/core/campaigns/users?description=${description}&page=${page_number}&size=${page_size}` 
-        : `/api/core/campaigns/users?page=${page_number}&size=${page_size}`,
+        url:
+          description !== '' && description !== null
+            ? `/api/core/campaigns/users?description=${description}&page=${page_number}&size=${page_size}`
+            : `/api/core/campaigns/users?page=${page_number}&size=${page_size}`,
         method: 'POST',
-        body: {userId},
+        body: { userId },
       }),
       providesTags: (result, error, { userId }) => [{ type: 'Campaign', id: `USER_${userId}` }],
       serializeQueryArgs: ({ endpointName }) => {
@@ -56,7 +58,7 @@ export const campaignApiSlice = coreApi.injectEndpoints({
         url: `/api/core/campaigns/stores`,
         method: 'POST',
         body: { storeId },
-        params: { status, description, size: page_size, page: page_number },
+        params: { status, description, page: page_number, size: page_size },
       }),
       providesTags: ['Campaign'],
       serializeQueryArgs: ({ endpointName }) => {
